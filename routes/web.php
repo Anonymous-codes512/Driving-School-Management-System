@@ -3,7 +3,10 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\SuperAdmin\DashboardController;
 use App\Http\Controllers\SuperAdmin\SchoolController;
+use App\Http\Controllers\SuperAdmin\SubscriptionController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/', [AuthController::class, 'showLogin']);
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [AuthController::class, 'showRegister'])->name('register.show');
@@ -24,6 +27,8 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['custom.auth:superadmin'])->group(function () {
     Route::get('/superadmin/dashboard', [DashboardController::class, 'dashboard'])->name('superadmin.dashboard');
     Route::get('/superadmin/school', [SchoolController::class, 'school'])->name('superadmin.school');
+    Route::get('/superadmin/subscription', [SubscriptionController::class, 'subscription'])->name('superadmin.subscription');
+    Route::get('/superadmin/subscription_request', [SubscriptionController::class, 'subscriptionRequests'])->name('superadmin.subscription_request');
 });
 
 Route::middleware(['custom.auth:admin'])->group(function () {

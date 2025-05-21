@@ -12,3 +12,4 @@ class SchoolController extends Controller
         return view('pages.superadmin.school');
     }
 }
+

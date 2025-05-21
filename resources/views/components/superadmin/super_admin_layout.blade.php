@@ -13,6 +13,24 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
     <style>
+        /* Chrome, Safari, Opera */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Firefox */
+        .scrollbar-hide {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            /* IE and Edge */
+        }
+
+        .loader {
+            /* Make sure loader icon is visible and properly sized */
+            font-size: 1.25rem;
+            /* 20px approx */
+        }
+
         /* Custom dark mode sidebar background */
         .dark aside {
             background-color: #171717;
@@ -33,7 +51,7 @@
         <!-- Logo -->
         <div class="mb-10 flex items-center space-x-4">
             <img src="{{ asset('images/GOFTECH.png') }}" alt="Goftech Logo" class="h-20 w-20 object-contain" />
-            {{-- <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 select-none">Goftech</h1> --}}
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200 select-none">Goftech</h1>
         </div>
 
         <!-- Nav -->
@@ -48,10 +66,15 @@
                 <i class="bi bi-buildings-fill"></i>
                 <span>Schools</span>
             </a>
-            <a href="#"
+            <a href="{{ route('superadmin.subscription') }}"
                 class="flex items-center space-x-2 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer">
-                <i class="bi bi-gear text-lg"></i>
-                <span>Settings</span>
+                <i class="bi bi-bookmark-star"></i>
+                <span>Subscriptions</span>
+            </a>
+            <a href="{{ route('superadmin.subscription_request') }}"
+                class="flex items-center space-x-2 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer">
+                <i class="bi bi-bookmark-star"></i>
+                <span>Subscription Requests</span>
             </a>
             <a href="{{ route('logout.perform') }}"
                 class="flex items-center space-x-2 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer">
@@ -111,7 +134,7 @@
 
         </header>
 
-        <main class="flex-1 p-2 pt-20 bg-gray-100 dark:bg-[#212121] overflow-auto">
+        <main class="flex-1 p-2 pt-20 bg-gray-100 dark:bg-[#212121] overflow-auto scrollbar-hide">
             @yield('content')
         </main>
 
