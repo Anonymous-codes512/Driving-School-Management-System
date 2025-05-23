@@ -20,16 +20,16 @@
                 <!-- Logo and welcome message -->
                 <div class="flex flex-col items-center mb-4">
                     <div class="h-16 w-16 rounded-full bg-indigo-100 flex items-center justify-center mb-4">
-                        <img src="{{ asset('images/GOFTECH.png') }}" alt="Goftech Logo">
+                        <img src="{{ asset('images/GOFTECH.png') }}" alt="Goftech Logo" />
                     </div>
                     <h3 class="text-xl font-medium text-gray-800">Welcome Back</h3>
                     <p class="text-gray-500 mt-1">Enter your credentials to access your account</p>
                 </div>
 
                 <!-- Form -->
-                <form id="login-form" method="POST" action="{{ route('login.perform') }}" class="space-y-3">
+                <form id="login-form" method="POST" action="{{ route('login.perform') }}" class="space-y-3"
+                    enctype="multipart/form-data">
                     @csrf
-
                     <!-- Email Field -->
                     <div class="space-y-2">
                         <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
@@ -45,7 +45,7 @@
                     </div>
 
                     <!-- Password Field -->
-                    <div class="space-y-2">
+                    <div class="space-y-2 relative">
                         <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
                         <div class="relative rounded-md shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -54,10 +54,15 @@
                             <input type="password" id="password" name="password"
                                 class="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                                 placeholder="••••••••" required />
-                            <!-- Removed show/hide password toggle button -->
+                            <!-- Toggle button -->
+                            <button type="button" id="togglePassword"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                                tabindex="-1" aria-label="Show or hide password">
+                                <i class="bi bi-eye" id="toggleIcon"></i>
+                            </button>
                         </div>
-                        <!-- Remove error display for now -->
-                        <div class="flex justify-between">
+                        <!-- Forgot password link -->
+                        <div class="flex justify-between mt-2">
                             <a href="{{ route('password_reset.show') }}"
                                 class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
                                 Forgot password?
@@ -66,13 +71,13 @@
                     </div>
 
                     <!-- Remember Me -->
-                    <div class="flex items-center">
+                    {{-- <div class="flex items-center">
                         <input type="checkbox" id="remember" name="remember"
                             class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
                         <label for="remember" class="ml-2 block text-sm text-gray-700">
                             Remember me
                         </label>
-                    </div>
+                    </div> --}}
 
                     <!-- Submit Button -->
                     <div>
@@ -97,6 +102,28 @@
             © 2025 GOFTECH. All rights reserved.
         </p>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+
+            togglePassword.addEventListener('click', () => {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+
+                // Toggle icon between eye and eye-slash
+                if (type === 'password') {
+                    toggleIcon.classList.remove('bi-eye-slash');
+                    toggleIcon.classList.add('bi-eye');
+                } else {
+                    toggleIcon.classList.remove('bi-eye');
+                    toggleIcon.classList.add('bi-eye-slash');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

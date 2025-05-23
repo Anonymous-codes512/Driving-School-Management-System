@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Register middleware alias
         $middleware->alias([
             'custom.auth' => App\Http\Middleware\CustomAuthMiddleware::class,
+            'prevent-back-history' => App\Http\Middleware\PreventBackHistoryMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

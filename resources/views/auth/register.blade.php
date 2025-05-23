@@ -26,7 +26,7 @@
                 </div>
 
                 <!-- Form -->
-                <form id="register-form" method="POST" action="{{ route('register.perform') }}" class="space-y-3">
+                <form id="register-form" method="POST" action="{{ route('register.perform') }}" class="space-y-3" enctype="multipart/form-data">
                     @csrf
                     
                     <!-- Name Field -->

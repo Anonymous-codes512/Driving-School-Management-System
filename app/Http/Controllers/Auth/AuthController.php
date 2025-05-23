@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -130,7 +131,7 @@ class AuthController extends Controller
             'email' => 'required|email|exists:users,email',
             'password' => 'required|string|min:6|confirmed',
         ]);
-        
+
         // Get password reset record
         $record = User::where('email', $request->email)->first();
 
@@ -158,16 +159,13 @@ class AuthController extends Controller
         return redirect()->route('login.show')->with('success', 'Password has been reset successfully.');
     }
 
-    // Logout
+
     public function logout(Request $request)
     {
+        $request->session()->forget('user_id');
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        $request->session()->forget('user_id');
-
-
-        return redirect()->route('login.show');
+        return redirect()->route('login.show')->with('success', 'You have been logged out successfully.');
     }
 }

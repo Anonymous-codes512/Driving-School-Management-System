@@ -11,30 +11,49 @@
 
     {{-- Bootstrap Icons CSS CDN --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Toastr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
 
     <style>
-        /* Chrome, Safari, Opera */
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }
 
-        /* Firefox */
         .scrollbar-hide {
             scrollbar-width: none;
             -ms-overflow-style: none;
-            /* IE and Edge */
         }
 
         .loader {
-            /* Make sure loader icon is visible and properly sized */
             font-size: 1.25rem;
-            /* 20px approx */
         }
 
-        /* Custom dark mode sidebar background */
         .dark aside {
             background-color: #171717;
             border-color: #212121;
+        }
+
+        #toast-container {
+            margin-top: 10px !important;
+            z-index: 9999 !important;
+        }
+
+        #toast-container>.toast {
+            width: auto !important;
+            max-width: 550px !important;
+            min-width: 200px !important;
+            white-space: normal !important;
+            word-wrap: break-word !important;
+        }
+
+        input[type=number].no-spin::-webkit-inner-spin-button,
+        input[type=number].no-spin::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number].no-spin {
+            -moz-appearance: textfield;
         }
     </style>
 </head>
@@ -76,10 +95,15 @@
                 <i class="bi bi-bookmark-star"></i>
                 <span>Subscription Requests</span>
             </a>
-            <a href="{{ route('logout.perform') }}"
-                class="flex items-center space-x-2 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer">
-                <i class="bi bi-box-arrow-right"></i> <span>Logout</span>
-            </a>
+            <form id="logout-form" action="{{ route('logout.perform') }}" method="POST" class="inline">
+                @csrf
+                <button type="submit"
+                    class="flex items-center space-x-2 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
+
 
         </nav>
     </aside>
@@ -139,6 +163,43 @@
         </main>
 
     </div>
+
+    <!-- jQuery (Toastr depends on jQuery) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-center",
+            "timeOut": "5000",
+            "escapeHtml": false
+        };
+
+        @if (session('success'))
+            toastr.success({!! json_encode(session('success')) !!});
+        @endif
+
+        @if (session('error'))
+            toastr.error({!! json_encode(session('error')) !!});
+        @endif
+
+        @if (session('info'))
+            toastr.info({!! json_encode(session('info')) !!});
+        @endif
+
+        @if (session('warning'))
+            toastr.warning({!! json_encode(session('warning')) !!});
+        @endif
+
+        @if ($errors->any())
+            @foreach ($errors->all() as $error)
+                toastr.error({!! json_encode($error) !!});
+            @endforeach
+        @endif
+    </script>
+
 
     <script>
         // Sidebar toggle

@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'showLogin']);
 
+Route::middleware(['auth', 'prevent-back-history'])->group(function () {
+    Route::post('logout', [AuthController::class, 'logout'])->name('logout.perform');
+});
+
 Route::middleware('guest')->group(function () {
     Route::get('register', [AuthController::class, 'showRegister'])->name('register.show');
     Route::post('register', [AuthController::class, 'register'])->name('register.perform');
@@ -16,7 +20,6 @@ Route::middleware('guest')->group(function () {
     Route::post('login', [AuthController::class, 'login'])->name('login.perform');
 
     // Route::post('logout', [AuthController::class, 'logout'])->name('logout.perform');
-    Route::get('logout', [AuthController::class, 'logout'])->name('logout.perform');
 
     Route::get('password_reset', [AuthController::class, 'showResetPassword'])->name('password_reset.show');
     Route::post('password_reset', [AuthController::class, 'sendResetLink'])->name('password_reset.send');
@@ -26,8 +29,19 @@ Route::middleware('guest')->group(function () {
 // Use custom auth middleware with role checks here
 Route::middleware(['custom.auth:superadmin'])->group(function () {
     Route::get('/superadmin/dashboard', [DashboardController::class, 'dashboard'])->name('superadmin.dashboard');
+    Route::get('/schools/export-pdf', [SchoolController::class, 'exportPdf'])->name('schools.exportPdf');
+
     Route::get('/superadmin/school', [SchoolController::class, 'school'])->name('superadmin.school');
+    Route::post('/superadmin/school', [SchoolController::class, 'storeSchool'])->name('superadmin.school.store');
+    Route::post('/superadmin/school/{id}/update', [SchoolController::class, 'update'])->name('superadmin.school.update');
+    Route::post('/superadmin/school/{id}/delete', [SchoolController::class, 'deleteSchool'])->name('superadmin.school.delete');
+
     Route::get('/superadmin/subscription', [SubscriptionController::class, 'subscription'])->name('superadmin.subscription');
+    Route::post('/subscriptions/store', [SubscriptionController::class, 'store'])->name('superadmin.subscriptions.store');
+    Route::post('/subscriptions/update', [SubscriptionController::class, 'update'])->name('superadmin.subscriptions.update');
+    Route::post('/subscriptions/delete', [SubscriptionController::class, 'delete'])->name('superadmin.subscriptions.delete');
+    Route::get('/subscriptions/export-pdf', [SubscriptionController::class, 'exportPdf'])->name('superadmin.subscriptions.exportPdf');
+
     Route::get('/superadmin/subscription_request', [SubscriptionController::class, 'subscriptionRequests'])->name('superadmin.subscription_request');
 });
 

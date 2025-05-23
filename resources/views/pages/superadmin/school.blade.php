@@ -14,16 +14,28 @@
 
         <div class="flex flex-col md:flex-row md:justify-between mb-4 gap-6">
             <!-- Search Bar -->
-            <input type="text" id="searchInput" placeholder="Search schools..."
-                class="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-md dark:bg-[#171717] dark:border-[#212121] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                onkeyup="filterTable()" />
+            <form method="GET" action="{{ route('superadmin.school') }}" class="mb-4 flex gap-2"
+                onsubmit="return handleFormSubmit(this, 'searchBtn')">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search schools..."
+                    class="w-full w-1/2 px-4 py-2 border rounded-md dark:bg-[#171717] dark:border-[#212121] dark:text-gray-200" />
+                <button type="submit" id="searchBtn"
+                    class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md font-semibold cursor-pointer flex items-center justify-center gap-2">
+                    <i class="bi bi-arrow-repeat animate-spin loader hidden"></i>
+                    <span class="btn-text">Search</span>
+                </button>
+            </form>
+
 
             <!-- Export & Add Buttons -->
             <div class="flex space-x-2">
-                <button id="exportBtn"
-                    class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md font-semibold flex items-center gap-2 cursor-pointer">
-                    <i class="bi bi-download"></i> Export PDF
-                </button>
+                <form method="GET" action="{{ route('schools.exportPdf') }}"
+                    onsubmit="return handleFormSubmit(this, 'exportSubmitBtn')" class="flex justify-center">
+                    <button type="submit" id="exportSubmitBtn"
+                        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md font-semibold flex items-center gap-2 cursor-pointer">
+                        <i class="bi bi-arrow-repeat animate-spin loader hidden"></i>
+                        <span class="btn-text">Export PDF</span>
+                    </button>
+                </form>
 
                 <button id="openModalBtn"
                     class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold flex items-center gap-2 cursor-pointer"
@@ -39,96 +51,41 @@
             <table id="schoolsTable" class="min-w-full table-auto text-left text-gray-700 dark:text-gray-300">
                 <thead class="border-b border-gray-200 dark:border-[#171717]">
                     <tr>
-                        <th class="py-3 px-4 font-semibold">#</th>
+                        <th class="py-3 px-4 font-semibold">Logo</th>
                         <th class="py-3 px-4 font-semibold">Name</th>
                         <th class="py-3 px-4 font-semibold">Address</th>
                         <th class="py-3 px-4 font-semibold">Phone</th>
+                        <th class="py-3 px-4 font-semibold">Info</th>
                         <th class="py-3 px-4 font-semibold">Status</th>
                         <th class="py-3 px-4 font-semibold">Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @php
-                        // Dummy paginated data (simulate pagination)
-                        $allSchools = collect([
-                            [
-                                'name' => 'August Ramos',
-                                'address' => 'In ut quidem in aspe',
-                                'phone' => '55',
-                                'info' => 'Occaecat sequi Nam a',
-                                'status' => 'Active',
-                            ],
-                            [
-                                'name' => 'Paramount Secondary School',
-                                'address' => '911 Hillside Dr, Kodiak, Alaska 99615, USA',
-                                'phone' => '234565434',
-                                'info' => 'Unofficial page...',
-                                'status' => 'Active',
-                            ],
-                            [
-                                'name' => 'Quintessa Buchanan',
-                                'address' => 'Est excepteur odit',
-                                'phone' => '+1 (248) 453-3566',
-                                'info' => 'Exercitationem conse',
-                                'status' => 'Active',
-                            ],
-                            [
-                                'name' => 'Oliver Mccarthy',
-                                'address' => 'Tempora earum ea eum',
-                                'phone' => '+1 (278) 722-1709',
-                                'info' => 'Perferendis dolore v',
-                                'status' => 'Active',
-                            ],
-                            [
-                                'name' => 'New School Name',
-                                'address' => '123 Example St, City, Country',
-                                'phone' => '1234567890',
-                                'info' => 'Additional info here',
-                                'status' => 'Active',
-                            ],
-                            [
-                                'name' => 'School Six',
-                                'address' => 'Address Six',
-                                'phone' => '666',
-                                'info' => 'Info Six',
-                                'status' => 'Inactive',
-                            ],
-                            [
-                                'name' => 'School Seven',
-                                'address' => 'Address Seven',
-                                'phone' => '777',
-                                'info' => 'Info Seven',
-                                'status' => 'Active',
-                            ],
-                        ]);
-                        $perPage = 5;
-                        $currentPage = request()->get('page', 1);
-                        $paginatedSchools = new \Illuminate\Pagination\LengthAwarePaginator(
-                            $allSchools->forPage($currentPage, $perPage),
-                            $allSchools->count(),
-                            $perPage,
-                            $currentPage,
-                            ['path' => request()->url(), 'query' => request()->query()],
-                        );
-                    @endphp
                     @foreach ($paginatedSchools as $index => $school)
-                        <tr class="border-b border-gray-100 dark:border-[#171717] hover:bg-gray-50 dark:hover:bg-[#2a2a2a]">
-                            <td class="py-4 px-4 font-semibold">
-                                {{ $index + 1 + ($paginatedSchools->currentPage() - 1) * $paginatedSchools->perPage() }}
+                        <tr class="...">
+                            <td class="py-4 px-4 font-semibold flex items-center gap-2">
+                                {{-- Show school logo image --}}
+                                <img src="{{ asset('storage/' . $school->logo_path) }}" alt="{{ $school->name }} Logo"
+                                    class="w-8 h-8 rounded object-cover"
+                                    onerror="this.onerror=null; this.src='{{ asset('images/default-school-logo.png') }}';" />
                             </td>
-                            <td class="py-4 px-4 font-bold text-gray-900 dark:text-gray-100 max-w-xs truncate"
-                                style="max-width: 150px;" title="{{ $school['name'] }}">
-                                {{ $school['name'] }}
+
+                            <td class="py-4 px-4 font-bold truncate" style="max-width: 150px;" title="{{ $school->name }}">
+                                {{ $school->name }}
                             </td>
-                            <td class="py-4 px-4 text-gray-900 dark:text-gray-100 max-w-xs truncate"
-                                style="max-width: 200px;" title="{{ $school['address'] }}">
-                                {{ $school['address'] }}
+                            <td class="py-4 px-4 truncate" style="max-width: 200px;" title="{{ $school->address }}">
+                                {{ $school->address }}
                             </td>
-                            <td class="py-4 px-4 whitespace-nowrap truncate" style="max-width: 100px;">
-                                {{ $school['phone'] }}
+                            <td class="py-4 px-4 truncate" style="max-width: 150px;">
+                                {{ $school->phone }}
                             </td>
+                            <td class="py-4 px-4 truncate" style="max-width: 200px;"
+                                title="{{ $school->info ?? 'No info' }}">
+                                {{ $school->info ?? 'No info' }}
+                            </td>
+
                             <td class="py-4 px-4 whitespace-nowrap" style="max-width: 100px;">
-                                @if ($school['status'] === 'Active')
+                                @if ($school->status === 'active')
                                     <span
                                         class="inline-block bg-green-500 dark:bg-green-600 text-white px-3 py-1 rounded-sm text-sm font-semibold">Active</span>
                                 @else
@@ -137,16 +94,13 @@
                                 @endif
                             </td>
                             <td class="py-4 px-4 whitespace-nowrap flex gap-3">
-                                <!-- Edit Button -->
+                                <!-- Action buttons (pass school id or index as needed) -->
                                 <button type="button" title="Edit"
-                                    class="text-blue-600 hover:text-blue-800 focus:outline-none cursor-pointer"
+                                    class="text-blue-600 hover:text-blue-800 cursor-pointer"
                                     onclick="editSchool({{ $index }})">
                                     <i class="bi bi-pencil-square text-lg"></i>
                                 </button>
-
-                                <!-- Delete Button -->
-                                <button type="button" title="Delete"
-                                    class="text-red-600 hover:text-red-800 focus:outline-none cursor-pointer"
+                                <button type="button" title="Delete" class="text-red-600 hover:text-red-800 cursor-pointer"
                                     onclick="deleteSchool({{ $index }})">
                                     <i class="bi bi-trash-fill text-lg"></i>
                                 </button>
@@ -188,8 +142,10 @@
                     school and school owner.
                 </p>
 
-                <form id="addSchoolForm" autocomplete="off" class="space-y-8">
-
+                <form id="addSchoolForm" autocomplete="off" class="space-y-8" method="POST"
+                    action="{{ route('superadmin.school.store') }}" enctype="multipart/form-data"
+                    onsubmit="return handleFormSubmit(this, 'addSubmitBtn')">
+                    @csrf
                     <!-- School Details Fieldset -->
                     <fieldset class="border border-gray-300 dark:border-[#212121] rounded-md p-6">
                         <legend class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-6">School Details</legend>
@@ -249,9 +205,29 @@
                                 </label>
                                 <select id="schoolStatus" name="schoolStatus" required
                                     class="w-full rounded-md border border-gray-300 dark:border-[#212121] bg-white dark:bg-[#121212] py-2 px-3 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                                    <option value="Active" selected>Active</option>
-                                    <option value="Inactive">Inactive</option>
+                                    <option value="active" selected>Active</option>
+                                    <option value="inactive">Inactive</option>
                                 </select>
+                            </div>
+
+                            <div class="col-span-2">
+                                <label for="schoolLogo" class="block mb-1 font-semibold text-gray-700 dark:text-gray-300">
+                                    School Logo <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="file" id="schoolLogo" name="schoolLogo" accept="image/*" required
+                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        onchange="document.getElementById('fileNameDisplay').textContent = this.files[0]?.name || ''" />
+
+                                    <!-- Visible styled input box with icon and file name -->
+                                    <div
+                                        class="w-full rounded-md border border-gray-300 dark:border-[#212121] bg-white dark:bg-[#121212] py-2 px-10 text-gray-900 dark:text-gray-200 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500 cursor-pointer select-none flex items-center">
+
+                                        <i
+                                            class="bi bi-image-fill text-indigo-600 absolute left-3 pointer-events-none"></i>
+                                        <span id="fileNameDisplay" class="truncate">Choose file...</span>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- School Info -->
@@ -263,7 +239,6 @@
                                     class="w-full rounded-md border border-gray-300 dark:border-[#212121] bg-white dark:bg-[#121212] py-2 px-3 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
                                     placeholder="Additional Info"></textarea>
                             </div>
-
                         </div>
                     </fieldset>
 
@@ -317,6 +292,22 @@
                                 </div>
                             </div>
 
+                            <div>
+                                <label for="ownerPicture"
+                                    class="block mb-1 font-semibold text-gray-700 dark:text-gray-300">
+                                    Owner Picture <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="file" id="ownerPicture" name="ownerPicture" accept="image/*"
+                                        required
+                                        class="w-full rounded-md border border-gray-300 dark:border-[#212121] bg-white dark:bg-[#121212] py-2 pl-10 px-3 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                        placeholder="Owner Picture" />
+
+                                    <i
+                                        class="bi bi-image-fill text-indigo-600 absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none"></i>
+                                </div>
+                            </div>
+
                             <!-- Owner Password -->
                             <div>
                                 <label for="ownerPassword"
@@ -345,8 +336,8 @@
                                     Confirm Password <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
-                                    <input type="password" id="ownerConfirmPassword" name="ownerConfirmPassword" required
-                                        minlength="6"
+                                    <input type="password" id="ownerConfirmPassword" name="ownerPassword_confirmation"
+                                        required minlength="6"
                                         class="w-full rounded-md border border-gray-300 dark:border-[#212121] bg-white dark:bg-[#121212] py-2 pl-10 pr-10 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                         placeholder="Confirm Password" />
                                     <i
@@ -398,8 +389,10 @@
                 <p id="editModalDesc" class="mb-6 text-gray-600 dark:text-gray-300">Update the school and owner details.
                 </p>
 
-                <form id="editSchoolForm" autocomplete="off" class="space-y-8">
-
+                <form id="editSchoolForm" autocomplete="off" class="space-y-8" method="POST"
+                    action="{{ route('superadmin.school.update', $school->id ?? 0) }}" enctype="multipart/form-data"
+                    onsubmit="return handleFormSubmit(this, 'editSubmitBtn')">
+                    @csrf
                     <!-- Same fields as add modal, just different ids -->
 
                     <fieldset class="border border-gray-300 dark:border-[#212121] rounded-md p-6">
@@ -457,9 +450,30 @@
                                 <select id="editSchoolStatus" name="editSchoolStatus" required
                                     class="w-full rounded-md border border-gray-300 dark:border-[#212121] bg-white dark:bg-[#121212]
                         py-2 px-3 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
                                 </select>
+                            </div>
+
+                            <div class="col-span-2">
+                                <label for="editSchoolLogo"
+                                    class="block mb-1 font-semibold text-gray-700 dark:text-gray-300">
+                                    School Logo
+                                </label>
+                                <div class="relative">
+                                    <input type="file" id="editSchoolLogo" name="editSchoolLogo" accept="image/*"
+                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        onchange="document.getElementById('fileNameDisplay').textContent = this.files[0]?.name || ''" />
+
+                                    <!-- Visible styled input box with icon and file name -->
+                                    <div
+                                        class="w-full rounded-md border border-gray-300 dark:border-[#212121] bg-white dark:bg-[#121212] py-2 px-10 text-gray-900 dark:text-gray-200 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500 cursor-pointer select-none flex items-center">
+
+                                        <i
+                                            class="bi bi-image-fill text-indigo-600 absolute left-3 pointer-events-none"></i>
+                                        <span id="fileNameDisplay" class="truncate">Choose file...</span>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="col-span-2">
@@ -523,9 +537,24 @@
                             </div>
 
                             <div>
+                                <label for="editOwnerPicture"
+                                    class="block mb-1 font-semibold text-gray-700 dark:text-gray-300">
+                                    Owner Picture
+                                </label>
+                                <div class="relative">
+                                    <input type="file" id="editOwnerPicture" name="editOwnerPicture" accept="image/*"
+                                        class="w-full rounded-md border border-gray-300 dark:border-[#212121] bg-white dark:bg-[#121212] py-2 pl-10 px-3 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                        placeholder="Owner Picture" />
+
+                                    <i
+                                        class="bi bi-image-fill text-indigo-600 absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none"></i>
+                                </div>
+                            </div>
+
+                            <div>
                                 <label for="editOwnerPassword"
                                     class="block mb-1 font-semibold text-gray-700 dark:text-gray-300">
-                                    Password <span class="text-red-500">*</span>
+                                    Password
                                 </label>
                                 <div class="relative">
                                     <input type="password" id="editOwnerPassword" name="editOwnerPassword"
@@ -545,11 +574,11 @@
                             <div>
                                 <label for="editOwnerConfirmPassword"
                                     class="block mb-1 font-semibold text-gray-700 dark:text-gray-300">
-                                    Confirm Password <span class="text-red-500">*</span>
+                                    Confirm Password
                                 </label>
                                 <div class="relative">
-                                    <input type="password" id="editOwnerConfirmPassword" name="editOwnerConfirmPassword"
-                                        minlength="6"
+                                    <input type="password" id="editOwnerConfirmPassword"
+                                        name="editOwnerPassword_confirmation" minlength="6"
                                         class="w-full rounded-md border border-gray-300 dark:border-[#212121] bg-white dark:bg-[#121212]
                             py-2 pl-10 pr-10 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
                                     <i
@@ -584,11 +613,8 @@
         <div id="deleteConfirmModal"
             class="fixed inset-0 flex items-center justify-center p-4 pointer-events-none opacity-0 scale-95 transition-all duration-300 z-50"
             role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle" aria-describedby="deleteModalDesc">
-
             <div
                 class="bg-white dark:bg-[#171717] rounded-lg shadow-xl w-full max-w-md p-6 relative transform transition-transform duration-300 max-h-[70vh]">
-
-                <!-- Close button -->
                 <button id="closeDeleteModalBtn" aria-label="Close modal"
                     class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none cursor-pointer">
                     <i class="bi bi-x-lg text-2xl"></i>
@@ -596,23 +622,28 @@
 
                 <h2 id="deleteModalTitle" class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Confirm
                     Deletion</h2>
-                <p id="deleteModalDesc" class="mb-6 text-gray-600 dark:text-gray-300">
-                    Are you sure you want to delete this school? This action cannot be undone.
-                </p>
+                <p id="deleteModalDesc" class="mb-6 text-gray-600 dark:text-gray-300">Are you sure you want to delete this
+                    school? This action cannot be undone.</p>
 
-                <div class="flex justify-end space-x-3">
-                    <button id="cancelDeleteBtn"
-                        class="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded-md font-semibold hover:bg-gray-400 dark:hover:bg-gray-600">
-                        Cancel
-                    </button>
-                    <button id="confirmDeleteBtn"
-                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md font-semibold flex items-center justify-center gap-2">
-                        <i class="bi bi-arrow-repeat animate-spin loader hidden"></i>
-                        <span class="btn-text">Delete</span>
-                    </button>
-                </div>
+                <form id="deleteSchoolForm" method="POST"
+                    action="{{ route('superadmin.school.delete', $school->id ?? 0) }}" enctype="multipart/form-data"
+                    onsubmit="return handleFormSubmit(this, 'confirmDeleteBtn')">
+                    @csrf
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancelDeleteBtn"
+                            class="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded-md font-semibold hover:bg-gray-400 dark:hover:bg-gray-600">
+                            Cancel
+                        </button>
+                        <button type="submit" id="confirmDeleteBtn"
+                            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md font-semibold flex items-center justify-center gap-2">
+                            <i class="bi bi-arrow-repeat animate-spin loader hidden"></i>
+                            <span class="btn-text">Delete</span>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
+
     </div>
 
     <!-- jsPDF + AutoTable CDN for PDF export -->
@@ -629,14 +660,12 @@
             if (input.type === "password") {
                 input.type = "text";
                 if (icon) {
-                    icon.classList.remove('bi-eye-fill');
-                    icon.classList.add('bi-eye-slash-fill');
+                    icon.classList.replace('bi-eye-fill', 'bi-eye-slash-fill');
                 }
             } else {
                 input.type = "password";
                 if (icon) {
-                    icon.classList.remove('bi-eye-slash-fill');
-                    icon.classList.add('bi-eye-fill');
+                    icon.classList.replace('bi-eye-slash-fill', 'bi-eye-fill');
                 }
             }
         }
@@ -645,7 +674,6 @@
         const addModal = document.getElementById('addSchoolModal');
         const editModal = document.getElementById('editSchoolModal');
         const deleteModal = document.getElementById('deleteConfirmModal');
-
         const backdrop = document.getElementById('modalBackdrop');
 
         // Add Modal buttons & form
@@ -668,7 +696,7 @@
 
         let schoolToDelete = null; // store id or index of school to delete
 
-        // Utility to open a modal and show backdrop
+        // Open modal and show backdrop
         function openModal(modal) {
             modal.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
             modal.classList.add('opacity-100', 'pointer-events-auto', 'scale-100');
@@ -678,7 +706,7 @@
             }
         }
 
-        // Utility to close a modal and hide backdrop
+        // Close modal and hide backdrop
         function closeModal(modal) {
             modal.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
             modal.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
@@ -688,7 +716,7 @@
             }
         }
 
-        // Loading toggle for buttons
+        // Toggle loading state on button
         function setLoading(button, isLoading) {
             if (!button) return;
             if (isLoading) {
@@ -702,7 +730,7 @@
             }
         }
 
-        // Add Modal event listeners
+        // Add modal events
         openAddBtn?.addEventListener('click', () => openModal(addModal));
         closeAddBtn.addEventListener('click', () => {
             addForm.reset();
@@ -714,28 +742,8 @@
             setLoading(addSubmitBtn, false);
             closeModal(addModal);
         });
-        backdrop?.addEventListener('click', () => {
-            if (!addModal.classList.contains('opacity-0')) {
-                addForm.reset();
-                setLoading(addSubmitBtn, false);
-                closeModal(addModal);
-            }
-        });
 
-        addForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            setLoading(addSubmitBtn, true);
-
-            // Simulate async operation
-            setTimeout(() => {
-                alert('School added (dummy)');
-                addForm.reset();
-                setLoading(addSubmitBtn, false);
-                closeModal(addModal);
-            }, 1500);
-        });
-
-        // Edit Modal event listeners
+        // Edit modal events
         closeEditBtn?.addEventListener('click', () => {
             editForm.reset();
             setLoading(editSubmitBtn, false);
@@ -746,58 +754,28 @@
             setLoading(editSubmitBtn, false);
             closeModal(editModal);
         });
-        backdrop?.addEventListener('click', () => {
-            if (!editModal.classList.contains('opacity-0')) {
-                editForm.reset();
-                setLoading(editSubmitBtn, false);
-                closeModal(editModal);
-            }
-        });
 
-        editForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            setLoading(editSubmitBtn, true);
-
-            // Simulate async operation
-            setTimeout(() => {
-                alert('School updated (dummy)');
-                editForm.reset();
-                setLoading(editSubmitBtn, false);
-                closeModal(editModal);
-            }, 1500);
-        });
-
-        // Delete Modal event listeners
+        // Delete modal events
         closeDeleteBtn?.addEventListener('click', () => {
             schoolToDelete = null;
             setLoading(confirmDeleteBtn, false);
             closeModal(deleteModal);
         });
+
         cancelDeleteBtn?.addEventListener('click', () => {
             schoolToDelete = null;
             setLoading(confirmDeleteBtn, false);
             closeModal(deleteModal);
         });
 
-        confirmDeleteBtn?.addEventListener('click', () => {
-            if (schoolToDelete !== null) {
-                setLoading(confirmDeleteBtn, true);
-                // Simulate async deletion
-                setTimeout(() => {
-                    alert(`School with id/index ${schoolToDelete} deleted (dummy).`);
-                    schoolToDelete = null;
-                    setLoading(confirmDeleteBtn, false);
-                    closeModal(deleteModal);
-                    // TODO: Remove from UI or backend call
-                }, 1500);
-            }
-        });
 
-        // Example function to open Edit Modal and fill data dynamically
+        // Edit School helper
         function editSchool(index) {
-            // Get school data from PHP paginatedSchools array (convert to JS)
             const schools = @json($paginatedSchools->values());
             if (!schools || !schools[index]) return;
+
+            console.log(schools);
+
 
             const school = schools[index];
             openModal(editModal);
@@ -805,123 +783,34 @@
             document.getElementById('editSchoolName').value = school.name || '';
             document.getElementById('editSchoolAddress').value = school.address || '';
             document.getElementById('editSchoolPhone').value = school.phone || '';
-            document.getElementById('editSchoolStatus').value = school.status || 'Active';
+            document.getElementById('editSchoolStatus').value = school.status || 'active';
             document.getElementById('editSchoolInfo').value = school.info || '';
 
-            // Owner fields dummy data or empty since not present in dummy
-            document.getElementById('editOwnerName').value = school.ownerName || '';
-            document.getElementById('editOwnerEmail').value = school.ownerEmail || '';
-            document.getElementById('editOwnerPhone').value = school.ownerPhone || '';
+            document.getElementById('editOwnerName').value = school.school_owner.name || '';
+            document.getElementById('editOwnerEmail').value = school.school_owner.email || '';
+            document.getElementById('editOwnerPhone').value = school.school_owner.phone || '';
             document.getElementById('editOwnerPassword').value = '';
             document.getElementById('editOwnerConfirmPassword').value = '';
         }
 
-        // Example function to open Delete Modal with school id/index
+        // Delete School helper
         function deleteSchool(index) {
             schoolToDelete = index;
             openModal(deleteModal);
         }
 
-        // Close modals on ESC key
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (!addModal.classList.contains('opacity-0')) {
-                    addForm.reset();
-                    setLoading(addSubmitBtn, false);
-                    closeModal(addModal);
-                }
-                if (!editModal.classList.contains('opacity-0')) {
-                    editForm.reset();
-                    setLoading(editSubmitBtn, false);
-                    closeModal(editModal);
-                }
-                if (!deleteModal.classList.contains('opacity-0')) {
-                    schoolToDelete = null;
-                    setLoading(confirmDeleteBtn, false);
-                    closeModal(deleteModal);
-                }
-            }
-        });
+        // New: Handle form submit to show loader and disable button (for normal submit)
+        function handleFormSubmit(form, submitBtnId) {
+            const submitBtn = document.getElementById(submitBtnId);
+            if (!submitBtn) return true;
 
-        // Search filter function
-        function filterTable() {
-            const input = document.getElementById("searchInput");
-            const filter = input.value.toLowerCase();
-            const table = document.getElementById("schoolsTable");
-            const trs = table.tBodies[0].getElementsByTagName("tr");
+            // Show loader, disable button
+            submitBtn.setAttribute('disabled', 'disabled');
+            submitBtn.querySelector('.loader')?.classList.remove('hidden');
+            submitBtn.querySelector('.btn-text')?.classList.add('hidden');
 
-            for (let tr of trs) {
-                const tds = tr.getElementsByTagName("td");
-                let visible = false;
-                for (let i = 1; i < tds.length; i++) { // ignore # column
-                    if (tds[i].textContent.toLowerCase().indexOf(filter) > -1) {
-                        visible = true;
-                        break;
-                    }
-                }
-                tr.style.display = visible ? "" : "none";
-            }
+            // Allow normal form submission to proceed
+            return true;
         }
-
-        // PDF export function
-        document.getElementById('exportBtn').addEventListener('click', () => {
-            const {
-                jsPDF
-            } = window.jspdf;
-            const doc = new jsPDF();
-
-            // Full dataset from Blade
-            const allSchools = @json($allSchools);
-
-            // Define columns headers
-            const columns = [{
-                    header: '#',
-                    dataKey: 'index'
-                },
-                {
-                    header: 'Name',
-                    dataKey: 'name'
-                },
-                {
-                    header: 'Address',
-                    dataKey: 'address'
-                },
-                {
-                    header: 'Phone',
-                    dataKey: 'phone'
-                },
-                {
-                    header: 'Status',
-                    dataKey: 'status'
-                },
-            ];
-
-            // Prepare rows with index starting at 1
-            const rows = allSchools.map((school, i) => ({
-                index: i + 1,
-                name: school.name,
-                address: school.address,
-                phone: school.phone,
-                status: school.status,
-            }));
-
-            doc.text("Schools List", 14, 16);
-
-            doc.autoTable({
-                startY: 20,
-                columns: columns,
-                body: rows,
-                styles: {
-                    fontSize: 8,
-                    cellPadding: 2,
-                },
-                headStyles: {
-                    fillColor: [59, 130, 246],
-                },
-                theme: 'striped',
-            });
-
-            doc.save('schools_list.pdf');
-        });
     </script>
 @endsection
