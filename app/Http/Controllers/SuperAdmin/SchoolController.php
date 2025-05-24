@@ -87,7 +87,7 @@ class SchoolController extends Controller
                     'name' => $request->input('ownerName'),
                     'email' => $request->input('ownerEmail'),
                     'password' => Hash::make($request->input('ownerPassword')),
-                    'role' => 'owner',
+                    'role' => 'schoolowner',
                     'profile_picture' => $ownerPicturePath,
                 ]);
 

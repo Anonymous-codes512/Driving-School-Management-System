@@ -45,11 +45,64 @@ Route::middleware(['custom.auth:superadmin'])->group(function () {
     Route::get('/superadmin/subscription_request', [SubscriptionController::class, 'subscriptionRequests'])->name('superadmin.subscription_request');
 });
 
-Route::middleware(['custom.auth:admin'])->group(function () {
+Route::middleware(['custom.auth:schoolowner'])->group(function () {
     Route::get('/admin/dashboard', function () {
-        return view('dashboards.admin');
-    })->name('admin.dashboard');
+        return view('pages.schoolowner.dashboard');
+    })->name('schoolowner.dashboard');
+
+    Route::get('/admin/admissions', function () {
+        return view('pages.schoolowner.admissions');
+    })->name('schoolowner.admissions');
+
+    Route::get('/admin/students', function () {
+        return view('pages.schoolowner.students');
+    })->name('schoolowner.students');
+
+    Route::get('/admin/instructors', function () {
+        return view('pages.schoolowner.instructors');
+    })->name('schoolowner.instructors');
+
+    Route::get('/admin/invoices', function () {
+        return view('pages.schoolowner.invoices');
+    })->name('schoolowner.invoices');
+
+    Route::get('/admin/courses', function () {
+        return view('pages.schoolowner.courses');
+    })->name('schoolowner.courses');
+
+    Route::get('/admin/banners', function () {
+        return view('pages.schoolowner.banners');
+    })->name('schoolowner.banners');
+
+    Route::get('/admin/expenses', function () {
+        return view('pages.schoolowner.expenses');
+    })->name('schoolowner.expenses');
+
+    Route::get('/admin/attendance', function () {
+        return view('pages.schoolowner.attendance');
+    })->name('schoolowner.attendance');
+
+    Route::get('/admin/classes', function () {
+        return view('pages.schoolowner.classes');
+    })->name('schoolowner.classes');
+
+    Route::get('/admin/leaves', function () {
+        return view('pages.schoolowner.leaves');
+    })->name('schoolowner.leaves');
+
+    Route::get('/admin/cars', function () {
+        return view('pages.schoolowner.cars');
+    })->name('schoolowner.cars');
+
+    Route::get('/admin/coupons', function () {
+        return view('pages.schoolowner.coupons');
+    })->name('schoolowner.coupons');
+
+    Route::get('/admin/inquiries', function () {
+        return view('pages.schoolowner.inquiries');
+    })->name('schoolowner.inquiries');
 });
+
 
 Route::middleware(['custom.auth:instructor'])->group(function () {
     Route::get('/instructor/dashboard', function () {

@@ -58,7 +58,24 @@ class User extends Authenticatable
     {
         return Str::of($this->name)
             ->explode(' ')
-            ->map(fn (string $name) => Str::of($name)->substr(0, 1))
+            ->map(fn(string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
+    }
+
+    public function schoolOwner()
+    {
+        return $this->hasOne(\App\Models\SchoolOwner::class, 'user_id', 'id');
+    }
+
+    public function school()
+    {
+        return $this->hasOneThrough(
+            \App\Models\School::class,
+            \App\Models\SchoolOwner::class,
+            'user_id',    // Foreign key on SchoolOwner table
+            'id',         // Foreign key on School table (local key on SchoolOwner)
+            'id',         // Local key on User table
+            'school_id'   // Local key on SchoolOwner table
+        );
     }
 }
