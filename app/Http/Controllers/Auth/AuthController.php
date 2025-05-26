@@ -40,9 +40,9 @@ class AuthController extends Controller
 
             switch ($role) {
                 case 'superadmin':
-                    return redirect()->route('superadmin.dashboard');
+                    return redirect()->route('superadmin.dashboard')>with('success', 'login succeed, Welcome to your dashboard!');
                 case 'schoolowner':
-                    return redirect()->route('admin.dashboard');
+                    return redirect()->route('schoolowner.dashboard')->with('success', 'login succeed, Welcome to your dashboard!');
                 case 'instructor':
                     return redirect()->route('instructor.dashboard');
                 case 'student':

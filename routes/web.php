@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\SchoolOwner\AdmissionController;
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\SuperAdmin\DashboardController;
+use App\Http\Controllers\SchoolOwner\CarController;
+use App\Http\Controllers\SchoolOwner\DashboardController;
 use App\Http\Controllers\SuperAdmin\SchoolController;
 use App\Http\Controllers\SuperAdmin\SubscriptionController;
 use Illuminate\Support\Facades\Route;
@@ -46,59 +48,55 @@ Route::middleware(['custom.auth:superadmin'])->group(function () {
 });
 
 Route::middleware(['custom.auth:schoolowner'])->group(function () {
-    Route::get('/admin/dashboard', function () {
-        return view('pages.schoolowner.dashboard');
-    })->name('schoolowner.dashboard');
+    Route::get('/schoolowner/dashboard', [DashboardController::class, 'dashboard'])->name('schoolowner.dashboard');
+    Route::get('/schoolowner/admissions',[AdmissionController::class, 'admissions'])->name('schoolowner.admissions');
+    
+    Route::get('/schoolowner/cars',[CarController::class, 'cars'])->name('schoolowner.cars');
+    Route::get('/schoolowner/cars/show_add_model',[CarController::class, 'showAddCarModelForm'])->name('schoolowner.cars.show_modal_form');
+    Route::post('/schoolowner/cars/add_model',[CarController::class, 'addCarModel'])->name('schoolowner.cars.add_modal');
+    Route::post('/schoolowner/cars/delete_model',[CarController::class, 'deleteCarModel'])->name('schoolowner.cars.delete_modal');
 
-    Route::get('/admin/admissions', function () {
-        return view('pages.schoolowner.admissions');
-    })->name('schoolowner.admissions');
-
-    Route::get('/admin/students', function () {
+    Route::get('/schoolowner/students', function () {
         return view('pages.schoolowner.students');
     })->name('schoolowner.students');
 
-    Route::get('/admin/instructors', function () {
+    Route::get('/schoolowner/instructors', function () {
         return view('pages.schoolowner.instructors');
     })->name('schoolowner.instructors');
 
-    Route::get('/admin/invoices', function () {
+    Route::get('/schoolowner/invoices', function () {
         return view('pages.schoolowner.invoices');
     })->name('schoolowner.invoices');
 
-    Route::get('/admin/courses', function () {
+    Route::get('/schoolowner/courses', function () {
         return view('pages.schoolowner.courses');
     })->name('schoolowner.courses');
 
-    Route::get('/admin/banners', function () {
+    Route::get('/schoolowner/banners', function () {
         return view('pages.schoolowner.banners');
     })->name('schoolowner.banners');
 
-    Route::get('/admin/expenses', function () {
+    Route::get('/schoolowner/expenses', function () {
         return view('pages.schoolowner.expenses');
     })->name('schoolowner.expenses');
 
-    Route::get('/admin/attendance', function () {
+    Route::get('/schoolowner/attendance', function () {
         return view('pages.schoolowner.attendance');
     })->name('schoolowner.attendance');
 
-    Route::get('/admin/classes', function () {
+    Route::get('/schoolowner/classes', function () {
         return view('pages.schoolowner.classes');
     })->name('schoolowner.classes');
 
-    Route::get('/admin/leaves', function () {
+    Route::get('/schoolowner/leaves', function () {
         return view('pages.schoolowner.leaves');
     })->name('schoolowner.leaves');
 
-    Route::get('/admin/cars', function () {
-        return view('pages.schoolowner.cars');
-    })->name('schoolowner.cars');
-
-    Route::get('/admin/coupons', function () {
+    Route::get('/schoolowner/coupons', function () {
         return view('pages.schoolowner.coupons');
     })->name('schoolowner.coupons');
 
-    Route::get('/admin/inquiries', function () {
+    Route::get('/schoolowner/inquiries', function () {
         return view('pages.schoolowner.inquiries');
     })->name('schoolowner.inquiries');
 });
