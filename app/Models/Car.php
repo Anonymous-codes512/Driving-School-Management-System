@@ -14,13 +14,15 @@ class Car extends Model
         'registration_number',
     ];
 
-     /**
+    /**
      * Get the car model associated with the car.
      */
+    // In Car.php model
     public function carModel()
     {
-        return $this->belongsTo(CarModel::class);
+        return $this->belongsTo(CarModel::class, 'car_model_id');
     }
+
 
     /**
      * Get the schedules associated with the car.

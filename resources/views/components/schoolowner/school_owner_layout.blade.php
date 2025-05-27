@@ -150,7 +150,30 @@
     </style>
 </head>
 
-<body class="h-full flex text-gray-800 bg-[#f9faff]">
+<body class="h-full flex text-gray-800 bg-[#f9faff] overflow-x-hidden">
+    <!-- Global Loader Overlay -->
+    <div id="globalLoader" class="fixed inset-0 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+        <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-400 border-t-black h-20 w-20"></div>
+    </div>
+
+    <style>
+        /* Spinner with black top border for the rotating part */
+        .loader {
+            border-top-color: black;
+            /* spinner color black */
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 
     <!-- Sidebar -->
     <aside id="sidebar"
@@ -420,6 +443,51 @@
 
         // Prevent click inside dropdown from closing it
         notificationDropdown.addEventListener('click', e => e.stopPropagation());
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const globalLoader = document.getElementById('globalLoader');
+
+            function showLoader() {
+                globalLoader.classList.remove('hidden');
+            }
+
+            function hideLoader() {
+                globalLoader.classList.add('hidden');
+            }
+
+            // Show loader on all form submissions (add, update, delete, search)
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function() {
+                    showLoader();
+                });
+            });
+            document.querySelectorAll('a[href]').forEach(link => {
+                const href = link.getAttribute('href');
+                // Skip if href is empty, anchor link, or javascript void
+                if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+
+                // Skip if link opens in new tab or download
+                if (link.target === '_blank' || link.hasAttribute('download')) return;
+
+                // Check if link is external (basic check)
+                if (href.startsWith('http') && !href.includes(window.location.hostname)) return;
+
+                link.addEventListener('click', function() {
+                    showLoader();
+                });
+            });
+
+            // Optional: Show loader on page unload (fallback for browser navs)
+            window.addEventListener('beforeunload', function() {
+                showLoader();
+            });
+
+            // Optional: Hide loader after full page load (to ensure it's hidden)
+            window.addEventListener('load', () => {
+                hideLoader();
+            });
+        });
     </script>
 </body>
 

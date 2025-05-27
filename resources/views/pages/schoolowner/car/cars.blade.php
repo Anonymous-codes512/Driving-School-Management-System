@@ -25,9 +25,13 @@
         <!-- Toolbar above the table -->
         <div class="flex items-center justify-between">
             <div class="flex space-x-3">
-                <a href="{{ route('schoolowner.cars.show_modal_form') }}" title="Add New"
+                <a title="Add New car model" id="addNewCarModel"
                     class="inline-flex items-center justify-center w-8 h-8 text-gray-700 hover:bg-gray-100 active:bg-gray-200 select-none cursor-pointer">
                     <i class="bi bi-plus-lg"></i>
+                </a>
+                <a title="Add New car" id="addNewCar"
+                    class="inline-flex items-center justify-center w-8 h-8 text-gray-700 hover:bg-gray-100 active:bg-gray-200 select-none cursor-pointer">
+                    <i class="bi bi-node-plus"></i>
                 </a>
                 <a href="#" title="Filter"
                     class="inline-flex items-center justify-center w-8 h-8 text-gray-700 hover:bg-gray-100 active:bg-gray-200 select-none cursor-pointer">
@@ -47,11 +51,13 @@
             </div>
         </div>
 
-        <!-- Admissions Table -->
-        <div>
+        <!-- Cars Model Table -->
+        <div class="mb-15">
+            <div class="text-gray-700 font-semibold text-lg pl-2 mt-3">All Car Models</div>
             <table class="w-full table-fixed border-separate" style="border-spacing: 0 12px;">
                 <thead>
                     <tr class="text-left text-gray-600 text-sm font-semibold select-none">
+                        <th class="p-3">Sr #</th>
                         <th class="p-3">Name</th>
                         <th class="p-3">Transmission</th>
                         <th class="p-3">Description</th>
@@ -62,6 +68,8 @@
                     @foreach ($carModels as $index => $carModel)
                         <tr class="{{ $index % 2 == 0 ? 'bg-[#EDEEFc]' : 'bg-[#E6F1FD]' }} rounded-lg shadow-sm"
                             style="border-radius: 10px;">
+                            <td class="p-3 text-gray-600 font-semibold">
+                                {{ $index + 1 }}</td>
                             <td class="p-3 font-semibold text-gray-900 truncate max-w-[100px]"
                                 title="{{ $carModel['name'] }}">
                                 {{ $carModel['name'] }}
@@ -75,19 +83,76 @@
                             <td class="p-3 text-center font-medium text-gray-700 whitespace-nowrap"
                                 style="min-width: 100px;">
                                 <div class="flex justify-center space-x-3">
-                                    <!-- Edit Button -->
-                                    <a href="{{-- Add your edit route here --}}" title="Edit"
-                                        class="text-indigo-600 hover:text-indigo-800 cursor-pointer">
+
+                                    <!-- Edit Car Model Button -->
+                                    <a id="editCarModel"
+                                        class="text-indigo-600 hover:text-indigo-800 cursor-pointer edit-button"
+                                        data-id="{{ $carModel['id'] }}" data-name="{{ $carModel['name'] }}"
+                                        data-transmission="{{ $carModel['transmission'] }}"
+                                        data-description="{{ $carModel['description'] }}" title="Edit">
                                         <i class="bi bi-pencil-square text-lg"></i>
                                     </a>
 
-                                    <!-- Delete Button triggers popup -->
+                                    <!-- Delete Car Model Button -->
                                     <button class="text-red-600 hover:text-red-800 cursor-pointer delete-button"
-                                        data-id="{{ $carModel['id'] }}" data-name="{{ $carModel['name'] }}"
-                                        data-image="{{ $carModel['image'] ?? '' }}" {{-- Optional image --}} title="Delete"
+                                        data-id="{{ $carModel['id'] }}" data-name="{{ $carModel['name'] }}" title="Delete"
                                         type="button">
                                         <i class="bi bi-trash text-lg"></i>
                                     </button>
+
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Cars Table -->
+        <div>
+            <div class="text-gray-700 font-semibold text-lg pl-2 mt-3">All Car</div>
+            <table class="w-full table-fixed border-separate" style="border-spacing: 0 12px;">
+                <thead>
+                    <tr class="text-left text-gray-600 text-sm font-semibold select-none">
+                        <th class="p-3">Sr #</th>
+                        <th class="p-3">Car Model</th>
+                        <th class="p-3">Registration Number</th>
+                        <th class="p-3 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($cars as $index => $car)
+                        <tr class="{{ $index % 2 == 0 ? 'bg-[#EDEEFc]' : 'bg-[#E6F1FD]' }} rounded-lg shadow-sm"
+                            style="border-radius: 10px;">
+                            <td class="p-3 text-gray-600 font-semibold">
+                                {{ $index + 1 }}
+                            </td>
+
+                            <td class="p-3 text-gray-600 truncate max-w-[100px]" title="{{ $car->carModel->name }}">
+                                {{ $car->carModel->name }}
+                            </td>
+
+                            <td class="p-3 text-gray-600 truncate max-w-[300px]" title="{{ $car['registration_number'] }}">
+                                {{ $car['registration_number'] }}
+                            </td>
+                            <td class="p-3 text-center font-medium text-gray-700 whitespace-nowrap"
+                                style="min-width: 100px;">
+                                <div class="flex justify-center space-x-3">
+
+                                    <!-- Edit Car Button -->
+                                    <a id="editCarButton"
+                                        class="text-indigo-600 hover:text-indigo-800 cursor-pointer edit-car-button"
+                                        data-id="{{ $car->id }}" data-car-model-id="{{ $car->carModel->id }}"
+                                        data-registration-number="{{ $car->registration_number }}" title="Edit">
+                                        <i class="bi bi-pencil-square text-lg"></i>
+                                    </a>
+
+                                    <!-- Delete Car Button -->
+                                    <button class="text-red-600 hover:text-red-800 cursor-pointer delete-car-button"
+                                        data-id="{{ $car->id }}" title="Delete" type="button">
+                                        <i class="bi bi-trash text-lg"></i>
+                                    </button>
+
                                 </div>
                             </td>
                         </tr>
@@ -125,85 +190,206 @@
         @endif
     </div>
 
-    <!-- Delete Confirmation Popup -->
-    <!-- Delete Confirmation Popup -->
-    <div id="deleteModal" class="fixed inset-0 flex items-center justify-center z-50 hidden"
-        style="backdrop-filter: blur(6px); background-color: rgba(0,0,0,0.35);">
-        <div
-            class="bg-gradient-to-b from-indigo-300 to-indigo-400 rounded-3xl p-6 max-w-sm w-full text-center relative shadow-lg">
-            <h2 class="text-xl font-semibold mb-2">Confirm Delete</h2>
-            <p class="mb-4 text-gray-700">Are you sure you want to delete this instructor?</p>
-
-            <!-- Optional user image - removable by user -->
-            <div id="modalImageContainer"
-                class="mx-auto mb-2 w-20 h-20 rounded-full overflow-hidden shadow-lg cursor-pointer">
-                <img id="modalImage" src="" alt="Instructor Image" class="w-full h-full object-cover" />
-            </div>
-
-            <!-- User name -->
-            <p id="modalUserName" class="font-semibold mb-6"></p>
-
-            <div class="flex justify-center gap-4">
-                <button id="cancelDeleteBtn" class="bg-black text-white px-6 py-2 rounded-lg">Cancel</button>
-
-                <!-- Form for deletion - will be dynamically set -->
-                <form id="deleteForm" method="POST" action="">
-                    @csrf
-                    <input type="hidden" name="car_model_id" id="deleteCarModelId" value="">
-                    <button type="submit"
-                        class="border border-black px-6 py-2 rounded-lg hover:bg-indigo-200">Delete</button>
-                </form>
-            </div>
-        </div>
-    </div>
+    @include('pages.schoolowner.car.car_modals')
 
 
     <!-- Scripts -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const deleteModal = document.getElementById('deleteModal');
-            const modalUserName = document.getElementById('modalUserName');
-            const modalImage = document.getElementById('modalImage');
-            const modalImageContainer = document.getElementById('modalImageContainer');
-            const deleteForm = document.getElementById('deleteForm');
+            // Loader element
+            const globalLoader = document.getElementById('globalLoader');
+
+            // Show/hide loader functions
+            function showLoader() {
+                globalLoader.classList.remove('hidden');
+            }
+
+            function hideLoader() {
+                globalLoader.classList.add('hidden');
+            }
+
+            // Modal elements
+            const addCarModelModal = document.getElementById('addCarModelModal');
+            const editCarModelModal = document.getElementById('editCarModelModal');
+            const deleteCarModelModal = document.getElementById('deleteCarModelModal');
+
+            const addCarModal = document.getElementById('addCarModal');
+            const editCarModal = document.getElementById('editCarModal');
+            const deleteCarModal = document.getElementById('deleteCarModal');
+
+            // Inputs inside modals for edit/delete car model
+            const editCarModelIdInput = document.getElementById('editCarModelId');
+            const editCarModelNameInput = document.getElementById('editName');
+            const editCarModelTransmissionSelect = document.getElementById('editTransmission');
+            const editCarModelDescriptionTextarea = document.getElementById('editDescription');
             const deleteCarModelIdInput = document.getElementById('deleteCarModelId');
-            const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+            const deleteModelForm = document.getElementById('deleteModelForm');
 
-            // Show popup on delete button click
-            document.querySelectorAll('.delete-button').forEach(button => {
+            // Inputs inside modals for edit/delete car
+            const editCarIdInput = document.getElementById('editCarId');
+            const editCarModelSelect = document.getElementById('editCarModelId');
+            const editCarRegistrationInput = document.getElementById('editRegistrationNumber');
+            const deleteCarIdInput = document.getElementById('deleteCarId');
+            const deleteCarForm = document.getElementById('deleteCarForm');
+
+            // Utility functions to open/close modals
+            function openModal(modal) {
+                modal.classList.remove('hidden');
+            }
+
+            function closeModal(modal) {
+                modal.classList.add('hidden');
+            }
+
+            // --- OPEN MODALS ON BUTTON CLICKS ---
+
+            // Add Car Model button
+            document.getElementById('addNewCarModel').addEventListener('click', () => {
+                openModal(addCarModelModal);
+            });
+
+            // Add Car button
+            document.getElementById('addNewCar').addEventListener('click', () => {
+                openModal(addCarModal);
+            });
+
+            // Edit Car Model buttons
+            document.querySelectorAll('#editCarModel').forEach(button => {
                 button.addEventListener('click', function() {
-                    const carModelId = this.getAttribute('data-id');
+                    const id = this.getAttribute('data-id');
                     const name = this.getAttribute('data-name');
-                    const image = this.getAttribute('data-image');
+                    const transmission = this.getAttribute('data-transmission');
+                    const description = this.getAttribute('data-description');
 
-                    modalUserName.textContent = name;
-                    deleteCarModelIdInput.value = carModelId;
+                    editCarModelIdInput.value = id;
+                    editCarModelNameInput.value = name;
+                    editCarModelTransmissionSelect.value = transmission;
+                    editCarModelDescriptionTextarea.value = description;
 
-                    // If image exists, show it, else hide container
-                    if (image && image.trim() !== '') {
-                        modalImage.src = image;
-                        modalImageContainer.style.display = 'block';
-                    } else {
-                        modalImageContainer.style.display = 'none';
-                    }
-
-                    // Set form action to your delete route
-                    deleteForm.action = "{{ route('schoolowner.cars.delete_modal') }}";
-
-                    deleteModal.classList.remove('hidden');
+                    openModal(editCarModelModal);
                 });
             });
 
-            // Cancel button hides popup
-            cancelDeleteBtn.addEventListener('click', function() {
-                deleteModal.classList.add('hidden');
+            // Delete Car Model buttons
+            document.querySelectorAll('.delete-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    deleteCarModelIdInput.value = id;
+
+                    // Set form action dynamically (optional if needed)
+                    deleteModelForm.action = "{{ route('schoolowner.cars.delete_model') }}";
+
+                    openModal(deleteCarModelModal);
+                });
             });
 
-            // Also close popup if click outside modal content
-            deleteModal.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    deleteModal.classList.add('hidden');
-                }
+            // Edit Car buttons
+            document.querySelectorAll('.edit-car-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const carModelId = this.getAttribute('data-car-model-id');
+                    const registrationNumber = this.getAttribute('data-registration-number');
+
+                    editCarIdInput.value = id;
+                    editCarModelSelect.value = carModelId;
+                    editCarRegistrationInput.value = registrationNumber;
+
+                    openModal(editCarModal);
+                });
+            });
+
+            // Delete Car buttons
+            document.querySelectorAll('.delete-car-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    deleteCarIdInput.value = id;
+
+                    // Set form action dynamically if required
+                    deleteCarForm.action = "{{ route('schoolowner.cars.delete_car') }}";
+
+                    openModal(deleteCarModal);
+                });
+            });
+
+            // --- CANCEL BUTTONS ---
+
+            // Cancel Add Car Model
+            document.getElementById('cancelAddModelBtn').addEventListener('click', e => {
+                e.preventDefault();
+                closeModal(addCarModelModal);
+            });
+
+            // Cancel Edit Car Model
+            document.getElementById('cancelEditModelBtn').addEventListener('click', e => {
+                e.preventDefault();
+                closeModal(editCarModelModal);
+            });
+
+            // Cancel Delete Car Model
+            document.getElementById('cancelDeleteModelBtn').addEventListener('click', e => {
+                e.preventDefault();
+                closeModal(deleteCarModelModal);
+            });
+
+            // Cancel Add Car
+            document.getElementById('cancelAddCarBtn').addEventListener('click', e => {
+                e.preventDefault();
+                closeModal(addCarModal);
+            });
+
+            // Cancel Edit Car
+            document.getElementById('cancelEditCarBtn').addEventListener('click', e => {
+                e.preventDefault();
+                closeModal(editCarModal);
+            });
+
+            // Cancel Delete Car
+            document.getElementById('cancelDeleteCarBtn').addEventListener('click', e => {
+                e.preventDefault();
+                closeModal(deleteCarModal);
+            });
+
+            // --- CLOSE MODALS WHEN CLICKING OUTSIDE ---
+
+            [addCarModelModal, editCarModelModal, deleteCarModelModal, addCarModal, editCarModal, deleteCarModal]
+            .forEach(modal => {
+                modal.addEventListener('click', e => {
+                    if (e.target === modal) {
+                        closeModal(modal);
+                    }
+                });
+            });
+
+            // --- LOADER HANDLING ---
+
+            // Show loader on all form submissions (add, update, delete, search)
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function() {
+                    showLoader();
+                });
+            });
+
+            // Show loader on sort link click
+            const sortLink = document.querySelector('a[title="Sort by Name"]');
+            if (sortLink) {
+                sortLink.addEventListener('click', function() {
+                    showLoader();
+                });
+            }
+
+            // Show loader on search input enter key (optional, since form submit covers this)
+            const searchInput = document.querySelector('input[name="search"]');
+            if (searchInput) {
+                searchInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        showLoader();
+                    }
+                });
+            }
+
+            // Optional: Hide loader on page load (if it was visible from previous navigation)
+            window.addEventListener('load', () => {
+                hideLoader();
             });
         });
     </script>

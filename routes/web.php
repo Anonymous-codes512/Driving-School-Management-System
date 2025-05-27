@@ -3,6 +3,7 @@
 use App\Http\Controllers\SchoolOwner\AdmissionController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\SchoolOwner\CarController;
+use App\Http\Controllers\SchoolOwner\CourseController;
 use App\Http\Controllers\SchoolOwner\DashboardController;
 use App\Http\Controllers\SuperAdmin\SchoolController;
 use App\Http\Controllers\SuperAdmin\SubscriptionController;
@@ -49,12 +50,25 @@ Route::middleware(['custom.auth:superadmin'])->group(function () {
 
 Route::middleware(['custom.auth:schoolowner'])->group(function () {
     Route::get('/schoolowner/dashboard', [DashboardController::class, 'dashboard'])->name('schoolowner.dashboard');
-    Route::get('/schoolowner/admissions',[AdmissionController::class, 'admissions'])->name('schoolowner.admissions');
-    
-    Route::get('/schoolowner/cars',[CarController::class, 'cars'])->name('schoolowner.cars');
-    Route::get('/schoolowner/cars/show_add_model',[CarController::class, 'showAddCarModelForm'])->name('schoolowner.cars.show_modal_form');
-    Route::post('/schoolowner/cars/add_model',[CarController::class, 'addCarModel'])->name('schoolowner.cars.add_modal');
-    Route::post('/schoolowner/cars/delete_model',[CarController::class, 'deleteCarModel'])->name('schoolowner.cars.delete_modal');
+    Route::get('/schoolowner/admissions', [AdmissionController::class, 'admissions'])->name('schoolowner.admissions');
+
+
+    Route::get('/schoolowner/cars', [CarController::class, 'cars'])->name('schoolowner.cars');
+
+    Route::post('/schoolowner/cars/add_model', [CarController::class, 'addCarModel'])->name('schoolowner.cars.add_model');
+    Route::post('/schoolowner/cars/update_model', [CarController::class, 'updatedCarModel'])->name('schoolowner.cars.update_model');
+    Route::post('/schoolowner/cars/delete_model', [CarController::class, 'deleteCarModel'])->name('schoolowner.cars.delete_model');
+
+    Route::post('/schoolowner/cars/add_car', [CarController::class, 'addCar'])->name('schoolowner.cars.add_car');
+    Route::post('/schoolowner/cars/update_car', [CarController::class, 'updatedCar'])->name('schoolowner.cars.update_car');
+    Route::post('/schoolowner/cars/delete_car', [CarController::class, 'deleteCar'])->name('schoolowner.cars.delete_car');
+
+
+    Route::get('/schoolowner/courses',[CourseController::class, 'courses'])->name('schoolowner.courses');
+    Route::post('/schoolowner/courses/add_Course',[CourseController::class, 'addCourse'])->name('schoolowner.courses.add_course');
+    Route::post('/schoolowner/courses/update_Course',[CourseController::class, 'updateCourse'])->name('schoolowner.courses.update_course');
+    Route::post('/schoolowner/courses/delete_Course',[CourseController::class, 'deleteCourse'])->name('schoolowner.courses.delete_course');
+
 
     Route::get('/schoolowner/students', function () {
         return view('pages.schoolowner.students');
@@ -67,10 +81,6 @@ Route::middleware(['custom.auth:schoolowner'])->group(function () {
     Route::get('/schoolowner/invoices', function () {
         return view('pages.schoolowner.invoices');
     })->name('schoolowner.invoices');
-
-    Route::get('/schoolowner/courses', function () {
-        return view('pages.schoolowner.courses');
-    })->name('schoolowner.courses');
 
     Route::get('/schoolowner/banners', function () {
         return view('pages.schoolowner.banners');
