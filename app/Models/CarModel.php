@@ -31,8 +31,8 @@ class CarModel extends Model
     /**
      * Get the courses associated with the car model.
      */
-    // public function courses()
-    // {
-    //     return $this->hasMany(Course::class);
-    // }
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
+    }
 }

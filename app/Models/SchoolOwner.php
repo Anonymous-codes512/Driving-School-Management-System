@@ -24,8 +24,13 @@ class SchoolOwner extends Model
     }
 
     // SchoolOwner belongs to one School
-    public function school()
+    public function schools()
     {
-        return $this->belongsTo(School::class);
+        return $this->hasMany(School::class, 'owner_id');
+    }
+
+    public function branches()
+    {
+        return $this->hasMany(Branch::class, 'owner_id');
     }
 }

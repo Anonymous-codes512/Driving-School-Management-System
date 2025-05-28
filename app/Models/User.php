@@ -67,15 +67,15 @@ class User extends Authenticatable
         return $this->hasOne(\App\Models\SchoolOwner::class, 'user_id', 'id');
     }
 
-    public function school()
-    {
-        return $this->hasOneThrough(
-            \App\Models\School::class,
-            \App\Models\SchoolOwner::class,
-            'user_id',    // Foreign key on SchoolOwner table
-            'id',         // Foreign key on School table (local key on SchoolOwner)
-            'id',         // Local key on User table
-            'school_id'   // Local key on SchoolOwner table
-        );
-    }
+    // public function school()
+    // {
+    //     return $this->hasOneThrough(
+    //         \App\Models\School::class,
+    //         \App\Models\SchoolOwner::class,
+    //         'user_id',    // Foreign key on SchoolOwner table
+    //         'id',         // Foreign key on School table (local key on SchoolOwner)
+    //         'id',         // Local key on User table
+    //         'school_id'   // Local key on SchoolOwner table
+    //     );
+    // }
 }

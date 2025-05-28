@@ -72,6 +72,6 @@ class AdmissionController extends Controller
             'query' => request()->query(),
         ]);
 
-        return view('pages.schoolowner.admissions', compact('admissions'));
+        return view('pages.schoolowner.admission.admissions', compact('admissions'));
     }
 }

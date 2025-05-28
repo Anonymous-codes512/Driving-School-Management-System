@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('phone')->unique();
             $table->string('profile_picture_path')->nullable();
-            $table->foreignId('school_id')->constrained('schools')->onDelete('cascade');
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
 
             $table->timestamps();

@@ -116,18 +116,13 @@
         #notificationDropdown {
             position: fixed;
             top: 6rem;
-            /* adjust header height */
             right: 15rem;
-            /* adjust horizontal position */
             width: 18rem;
-            /* 288px */
             max-height: 20rem;
-            /* 320px */
             background: white;
             border: 1px solid #e5e7eb;
             border-radius: 0.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
             overflow-y: auto;
             z-index: 9999;
             display: none;
@@ -140,7 +135,6 @@
             padding-left: 0;
             margin-bottom: 0;
             padding-right: 1rem;
-            /* space for scrollbar */
         }
 
         /* Optional: Customize WebKit scrollbar for better UX */
@@ -184,14 +178,20 @@
             $schoolLogo = asset('images/GOFTECH.png'); // default
             $schoolName = 'Goftech';
 
-            if (auth()->user()) {
+            if (auth()->check()) {
                 $user = auth()->user();
-                if ($user->school && $user->school->logo_path) {
-                    $schoolLogo = asset('storage/' . $user->school->logo_path);
-                    $schoolName = $user->school->name;
+                $owner = $user->schoolOwner; // Assuming User has this relation
+
+                // Get first school or null
+                $school = $owner ? $owner->schools()->first() : null;
+
+                if ($school && $school->logo_path) {
+                    $schoolLogo = asset('storage/' . $school->logo_path);
+                    $schoolName = $school->name;
                 }
             }
         @endphp
+
 
         <div class="flex-shrink-0 mb-5 flex items-center space-x-4">
             <img src="{{ $schoolLogo }}" alt="School Logo" class="h-20 w-20 object-contain mx-auto" />
@@ -202,6 +202,7 @@
             $currentRoute = Route::currentRouteName();
             $navItems = [
                 ['name' => 'Dashboard', 'route' => 'schoolowner.dashboard', 'icon' => 'bi-grid-3x3-gap-fill'],
+                ['name' => 'Branches', 'route' => 'schoolowner.branches', 'icon' => 'bi bi-diagram-3'],
                 ['name' => 'Admissions', 'route' => 'schoolowner.admissions', 'icon' => 'bi-file-earmark-person'],
                 ['name' => 'Cars', 'route' => 'schoolowner.cars', 'icon' => 'bi-car-front-fill'],
                 ['name' => 'Courses', 'route' => 'schoolowner.courses', 'icon' => 'bi-journal-text'],

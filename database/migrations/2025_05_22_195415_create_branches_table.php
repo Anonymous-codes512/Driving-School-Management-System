@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('schools', function (Blueprint $table) {
+        Schema::create('branches', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('address')->nullable();
-            $table->string('phone')->nullable();
+            $table->string('name');
+            $table->string('address');
             $table->enum('status', ['active', 'inactive'])->default('active');
-            $table->text('info')->nullable();
-            $table->foreignId('owner_id')->constrained('school_owners')->onDelete('cascade');
-            $table->string('logo_path')->nullable();
+            $table->foreignId('owner_id')->constrained('school_owners')->onDelete('cascade'); // owner relation
+            $table->foreignId('school_id')->constrained('schools')->onDelete('cascade'); // owner relation
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('schools');
+        Schema::dropIfExists('branches');
     }
 };

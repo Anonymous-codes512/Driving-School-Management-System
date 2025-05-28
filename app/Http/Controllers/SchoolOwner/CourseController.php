@@ -99,7 +99,11 @@ class CourseController extends Controller
 
     public function updateCourse(Request $request)
     {
-        $id = $request->edit_course_id;
+        $id = $request->course_id;
+        if (!$id) {
+            return redirect()->back()->withErrors(['error' => 'Course ID missing']);
+        }
+
         $rules = [
             'car_model_id'     => 'required|exists:car_models,id',
             'course_category'  => 'required|string|max:255',
@@ -141,16 +145,18 @@ class CourseController extends Controller
             return redirect()->route('schoolowner.courses')
                 ->with('success', 'Course updated successfully.');
         } catch (\Exception $e) {
-            dd($e);
-            // Optionally log error \Log::error($e);
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['error' => 'Unexpected error occurred while updating course. Please try again.']);
         }
     }
 
-    public function deleteCourse($id)
+    public function deleteCourse(Request $request)
     {
+        $id = $request->input('course_id');
+        if (!$id) {
+            return redirect()->back()->withErrors(['error' => 'Course ID missing']);
+        }
         try {
             $course = Course::findOrFail($id);
             $course->delete();

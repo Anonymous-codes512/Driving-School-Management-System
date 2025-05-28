@@ -31,9 +31,9 @@ class SchoolController extends Controller
         }
 
         $paginatedSchools = $query->orderBy('name')->paginate(10)->withQueryString();
-
         return view('pages.superadmin.school', compact('paginatedSchools'));
     }
+
 
     public function exportPdf()
     {
@@ -71,37 +71,34 @@ class SchoolController extends Controller
             $schoolLogoPath = $request->file('schoolLogo')->storeAs('schools', $schoolLogoName, 'public');
             $ownerPicturePath = $request->file('ownerPicture')->storeAs('owners', $ownerPictureName, 'public');
 
-            DB::transaction(function () use ($request, $schoolLogoPath, $ownerPicturePath) {
-                // Create school
-                $school = School::create([
-                    'name' => $request->input('schoolName'),
-                    'address' => $request->input('schoolAddress'),
-                    'phone' => $request->input('schoolPhone'),
-                    'status' => $request->input('schoolStatus'),
-                    'info' => $request->input('schoolInfo'),
-                    'logo_path' => $schoolLogoPath,
-                ]);
+            // Create user for owner
+            $user = new User;
+            $user->name = $request->input('ownerName');
+            $user->email = $request->input('ownerEmail');
+            $user->password = Hash::make($request->input('ownerPassword'));
+            $user->role = 'schoolowner';
+            $user->profile_picture = $ownerPicturePath;
+            $user->save();
 
-                // Create user for owner
-                $user = User::create([
-                    'name' => $request->input('ownerName'),
-                    'email' => $request->input('ownerEmail'),
-                    'password' => Hash::make($request->input('ownerPassword')),
-                    'role' => 'schoolowner',
-                    'profile_picture' => $ownerPicturePath,
-                ]);
+            // Create school owner linked to school and user
+            $owner = new SchoolOwner;
 
-                // Create school owner linked to school and user
-                $owner = new SchoolOwner([
-                    'name' => $request->input('ownerName'),
-                    'email' => $request->input('ownerEmail'),
-                    'phone' => $request->input('ownerPhone'),
-                    'profile_picture_path' => $ownerPicturePath,
-                    'user_id' => $user->id,
-                ]);
+            $owner->name = $request->input('ownerName');
+            $owner->email = $request->input('ownerEmail');
+            $owner->phone = $request->input('ownerPhone');
+            $owner->profile_picture_path = $ownerPicturePath;
+            $owner->user_id = $user->id;
+            $owner->save();
 
-                $school->schoolOwner()->save($owner);
-            });
+            $school = new School;
+            $school->name = $request->input('schoolName');
+            $school->address = $request->input('schoolAddress');
+            $school->phone = $request->input('schoolPhone');
+            $school->status = $request->input('schoolStatus');
+            $school->info = $request->input('schoolInfo');
+            $school->owner_id = $owner->id;
+            $school->logo_path = $schoolLogoPath;
+            $school->save();
 
             return redirect()->back()->with('success', 'School and Owner added successfully!');
         } catch (\Exception $e) {
@@ -111,11 +108,12 @@ class SchoolController extends Controller
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        // Fetch school & owner first
-        $school = School::findOrFail($id);
+        // Fetch school & owner by IDs from request
+        $school = School::findOrFail($request->input('school_id'));
         $owner = $school->schoolOwner;
+        $user = $owner->user;
 
         // Validate request data
         $validated = $request->validate([
@@ -128,17 +126,15 @@ class SchoolController extends Controller
             'editSchoolAddress' => 'required|string|max:255',
             'editSchoolPhone' => 'required|string|max:20',
             'editSchoolStatus' => 'required|in:active,inactive',
-            'editSchoolLogo' => 'nullable|image|max:2048',
             'editSchoolInfo' => 'nullable|string',
+            'editSchoolLogo' => 'nullable|image|max:2048',
 
             'editOwnerName' => 'required|string|max:255',
             'editOwnerEmail' => [
                 'required',
                 'email',
                 'max:255',
-                Rule::unique('school_owners', 'email')
-                    ->where('school_id', $owner->school_id)
-                    ->ignore($owner->id),
+                Rule::unique('school_owners', 'email')->ignore($owner->id),
             ],
             'editOwnerPhone' => 'required|string|max:20',
             'editOwnerPicture' => 'nullable|image|max:2048',
@@ -166,24 +162,38 @@ class SchoolController extends Controller
         $owner->email = $validated['editOwnerEmail'];
         $owner->phone = $validated['editOwnerPhone'];
 
+        $ownerPictureField = 'profile_picture_path'; // or 'picture_path' per your model/migration
         if ($request->hasFile('editOwnerPicture')) {
-            if ($owner->picture_path && Storage::disk('public')->exists($owner->picture_path)) {
-                Storage::disk('public')->delete($owner->picture_path);
+            if ($owner->{$ownerPictureField} && Storage::disk('public')->exists($owner->{$ownerPictureField})) {
+                Storage::disk('public')->delete($owner->{$ownerPictureField});
             }
-            $owner->picture_path = $request->file('editOwnerPicture')->store('owners/pictures', 'public');
+            $owner->{$ownerPictureField} = $request->file('editOwnerPicture')->store('owners/pictures', 'public');
         }
         $owner->save();
 
-        // Update user password if provided
-        if (!empty($validated['editOwnerPassword'])) {
-            $user = $owner->user;
-            if ($user) {
-                $user->password = Hash::make($validated['editOwnerPassword']);
-                $user->save();
+        // Update linked user fields
+        if ($user) {
+            $user->name = $validated['editOwnerName'];
+            $user->email = $validated['editOwnerEmail'];
+
+            // Update user profile picture if owner picture updated (optional: sync both pictures)
+            if ($request->hasFile('editOwnerPicture')) {
+                $userProfilePicField = 'profile_picture'; // Adjust if different in your User model
+                if ($user->{$userProfilePicField} && Storage::disk('public')->exists($user->{$userProfilePicField})) {
+                    Storage::disk('public')->delete($user->{$userProfilePicField});
+                }
+                $user->{$userProfilePicField} = $owner->{$ownerPictureField};
             }
+
+            // Update password if provided
+            if (!empty($validated['editOwnerPassword'])) {
+                $user->password = Hash::make($validated['editOwnerPassword']);
+            }
+
+            $user->save();
         }
 
-        return redirect()->back()->with('success', 'School and owner updated successfully.');
+        return redirect()->back()->with('success', 'School, owner, and user updated successfully.');
     }
 
     public function deleteSchool($id)

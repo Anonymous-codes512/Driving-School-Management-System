@@ -40,7 +40,7 @@ class AuthController extends Controller
 
             switch ($role) {
                 case 'superadmin':
-                    return redirect()->route('superadmin.dashboard')>with('success', 'login succeed, Welcome to your dashboard!');
+                    return redirect()->route('superadmin.dashboard')->with('success', 'login succeed, Welcome to your dashboard!');
                 case 'schoolowner':
                     return redirect()->route('schoolowner.dashboard')->with('success', 'login succeed, Welcome to your dashboard!');
                 case 'instructor':
@@ -57,6 +57,7 @@ class AuthController extends Controller
             'email' => __('auth.failed'),
         ]);
     }
+
 
     // Show Register Form
     public function showRegister()

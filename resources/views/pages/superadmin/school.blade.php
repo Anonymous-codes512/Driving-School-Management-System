@@ -393,7 +393,9 @@
                     action="{{ route('superadmin.school.update', $school->id ?? 0) }}" enctype="multipart/form-data"
                     onsubmit="return handleFormSubmit(this, 'editSubmitBtn')">
                     @csrf
-                    <!-- Same fields as add modal, just different ids -->
+                    
+                    <input type="hidden" id="editSchoolId" name="school_id" value="">
+                    <input type="hidden" id="editOwnerId" name="owner_id" value="">
 
                     <fieldset class="border border-gray-300 dark:border-[#212121] rounded-md p-6">
                         <legend class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-6">School Details</legend>
@@ -768,27 +770,32 @@
             closeModal(deleteModal);
         });
 
-
         // Edit School helper
         function editSchool(index) {
+            // Convert paginatedSchools from backend to JS array
             const schools = @json($paginatedSchools->values());
+
             if (!schools || !schools[index]) return;
 
-            console.log(schools);
-
-
             const school = schools[index];
+console.log(schools);
+
+            // Open your edit modal (assumed you have an openModal function and modal element)
             openModal(editModal);
 
+            // Fill school fields
+            document.getElementById('editSchoolId').value = school.id || '';
             document.getElementById('editSchoolName').value = school.name || '';
             document.getElementById('editSchoolAddress').value = school.address || '';
             document.getElementById('editSchoolPhone').value = school.phone || '';
             document.getElementById('editSchoolStatus').value = school.status || 'active';
             document.getElementById('editSchoolInfo').value = school.info || '';
 
-            document.getElementById('editOwnerName').value = school.school_owner.name || '';
-            document.getElementById('editOwnerEmail').value = school.school_owner.email || '';
-            document.getElementById('editOwnerPhone').value = school.school_owner.phone || '';
+            const owner = school.school_owner || {};
+            document.getElementById('editOwnerId').value = owner.id || ''; // if needed
+            document.getElementById('editOwnerName').value = owner.name || '';
+            document.getElementById('editOwnerEmail').value = owner.email || '';
+            document.getElementById('editOwnerPhone').value = owner.phone || '';
             document.getElementById('editOwnerPassword').value = '';
             document.getElementById('editOwnerConfirmPassword').value = '';
         }

@@ -50,7 +50,7 @@
         </nav>
 
         <!-- Toolbar above the table -->
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between mr-20">
             <div class="flex space-x-3">
                 <a title="Add New Course" id="addNewCourse"
                     class="inline-flex items-center justify-center w-8 h-8 text-gray-700 hover:bg-gray-100 active:bg-gray-200 select-none cursor-pointer">
@@ -65,7 +65,7 @@
                     <i class="bi bi-arrow-down-up"></i>
                 </a>
             </div>
-            <div >
+            <div>
                 <form method="GET" action="{{ route('schoolowner.courses') }}">
                     <input type="search" name="search" value="{{ request('search') }}"
                         class="border border-gray-300 rounded px-3 py-1 text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
@@ -220,7 +220,7 @@
                             <select id="course_category_add" name="course_category" required
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300">
                                 <option value="" selected>Select Course Category </option>
-                                <option value="regular" selected>Regular</option>
+                                <option value="regular">Regular</option>
                                 <option value="custom">Custom</option>
                             </select>
                         </div>
@@ -263,8 +263,8 @@
                             <select id="course_type_add" name="course_type" required
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300">
                                 <option value="" selected>Select Course Type</option>
-                                <option value="male" selected>Male</option>
-                                <option value="female" selected>Female</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
                                 <option value="both">Both</option>
                             </select>
                         </div>
@@ -274,7 +274,8 @@
                                     class="text-red-600">*</span></label>
                             <select id="status_add" name="status" required
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300">
-                                <option value="active" selected>Active</option>
+                                <option value="" selected>Select Status</option>
+                                <option value="active">Active</option>
                                 <option value="inactive">Inactive</option>
                             </select>
                         </div>
@@ -282,8 +283,8 @@
 
                     <div class="flex justify-end gap-2 mt-4">
                         <button id="cancelAddCourseBtn" type="button"
-                            class="bg-black text-white font-semibold px-6 py-2 rounded-md">Cancel</button>
-                        <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200">Add
+                            class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel</button>
+                        <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Add
                             Course</button>
                     </div>
                 </form>
@@ -295,7 +296,8 @@
             style="backdrop-filter: blur(6px); background-color: rgba(0,0,0,0.35);">
             <div class="bg-gradient-to-b from-indigo-300 to-indigo-400 rounded-3xl p-6 max-w-xl w-full relative shadow-lg">
                 <h2 class="text-xl font-semibold mb-4">Edit Course</h2>
-                <form method="POST" action="{{ route('schoolowner.courses.update_course') }}" id="editCourseForm" class="space-y-6">
+                <form method="POST" action="{{ route('schoolowner.courses.update_course') }}" id="editCourseForm"
+                    class="space-y-6">
                     @csrf
                     <input type="hidden" id="edit_course_id" name="course_id" />
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -379,8 +381,8 @@
 
                     <div class="flex justify-end gap-2 mt-4">
                         <button id="cancelEditCourseBtn" type="button"
-                            class="bg-black text-white font-semibold px-6 py-2 rounded-md">Cancel</button>
-                        <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200">Update
+                            class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel</button>
+                        <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Update
                             Course</button>
                     </div>
                 </form>
@@ -394,15 +396,14 @@
                 <h2 class="text-xl font-semibold mb-4">Confirm Deletion</h2>
                 <p class="mb-6 text-gray-700">Are you sure you want to delete the course <strong
                         id="courseToDeleteName"></strong>?</p>
-                <form method="POST" action="{{ route('schoolowner.courses.delete_course') }}" id="deleteCourseForm" class="space-y-6">
+                <form method="POST" action="{{ route('schoolowner.courses.delete_course') }}" id="deleteCourseForm"
+                    class="space-y-6">
                     @csrf
-                    @method('DELETE')
                     <input type="hidden" id="delete_course_id" name="course_id" />
                     <div class="flex justify-end gap-2">
                         <button id="cancelDeleteCourseBtn" type="button"
-                            class="bg-black text-white font-semibold px-6 py-2 rounded-md">Cancel</button>
-                        <button type="submit"
-                            class="border border-black px-6 py-2 rounded-md hover:bg-red-500 bg-red-600 text-white">Delete
+                            class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel</button>
+                        <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Delete
                             Course</button>
                     </div>
                 </form>
