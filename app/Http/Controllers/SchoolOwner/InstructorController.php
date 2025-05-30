@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\SchoolOwner;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\Employee;
 use App\Models\Instructor;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -56,12 +58,19 @@ class InstructorController extends Controller
 
     public function showAddInstructorForm()
     {
-        return view('pages.schoolowner.instructor.add_instructor');
+        $user = Auth::user();
+        $schoolOwner = $user->schoolOwner;
+        $schoolIds = $schoolOwner->schools->pluck('id')->toArray();
+        $branches = Branch::where('owner_id', $schoolOwner->id)
+            ->whereIn('school_id', $schoolIds)
+            ->get();
+
+        return view('pages.schoolowner.instructor.add_instructor', compact('branches'));
     }
 
     public function addInstructor(Request $request)
     {
-        // Validate input data
+        // V\alidate input data including branch_id
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'password' => 'required|string|min:8',
@@ -78,30 +87,25 @@ class InstructorController extends Controller
             'license_city' => 'required|string|max:255',
             'license_start_date' => 'required|date',
             'license_end_date' => 'required|date|after:license_start_date',
-            'experience' => 'nullable|string|max:50',
+            'experience' => 'string|max:50',
             'license_number' => 'required|string|max:50',
             'gender' => 'required|in:male,female',
+            'branch' => 'required|exists:branches,id',  // <-- Validate branch_id exists in branches table
             'picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
         ]);
 
         try {
-            // Start transaction to ensure consistency
             DB::beginTransaction();
 
-            // Handle profile picture upload with unique name
+            // Handle picture upload as before...
             $profilePicturePath = null;
             if ($request->hasFile('picture')) {
-                // Check if the 'Instructor' folder exists, if not, create it
                 $directoryPath = storage_path('app/public/Instructor');
                 if (!file_exists($directoryPath)) {
-                    mkdir($directoryPath, 0775, true); // Create folder with appropriate permissions
+                    mkdir($directoryPath, 0775, true);
                 }
-
-                // Generate a unique filename for the picture
                 $imageExtension = $request->file('picture')->getClientOriginalExtension();
                 $imageName = 'instructor_' . uniqid() . '.' . $imageExtension;
-
-                // Store the image with the unique name
                 $profilePicturePath = $request->file('picture')->storeAs('Instructor', $imageName, 'public');
             }
 
@@ -114,7 +118,7 @@ class InstructorController extends Controller
                 'password' => Hash::make($validatedData['password']),
             ]);
 
-            // Create Employee
+            // Create Employee with branch_id
             $employee = Employee::create([
                 'user_id' => $user->id,
                 'email' => $validatedData['email'],
@@ -123,9 +127,10 @@ class InstructorController extends Controller
                 'salary' => $validatedData['salary'],
                 'gender' => $validatedData['gender'],
                 'id_card_number' => $validatedData['id_card_number'],
-                'picture' => $profilePicturePath, // Store the same picture for employee
+                'picture' => $profilePicturePath,
                 'designation' => 'Instructor',
                 'employee_status' => 'employed',
+                'branch_id' => $validatedData['branch'],  // <-- Save branch_id here
             ]);
 
             // Create Instructor
@@ -134,25 +139,21 @@ class InstructorController extends Controller
                 'license_city' => $validatedData['license_city'],
                 'license_start_date' => $validatedData['license_start_date'],
                 'license_end_date' => $validatedData['license_end_date'],
-                'experience' => $validatedData['experience'] ?? null,
+                'experience' => $validatedData['experience'],
                 'license_number' => $validatedData['license_number'],
             ]);
 
-            // Commit the transaction
             DB::commit();
 
             return redirect()->route('schoolowner.instructors')->with('success', 'Instructor added successfully.');
         } catch (\Exception $e) {
-            // Rollback transaction if anything goes wrong
             DB::rollBack();
 
-            // Log the error message for debugging
             Log::error('Error adding instructor: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
                 'request' => $request->all(),
             ]);
 
-            // Return back with error message
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['error' => 'Something went wrong while adding the instructor. Please try again later.']);
@@ -161,8 +162,15 @@ class InstructorController extends Controller
 
     public function showEditInstructorForm($id)
     {
+        $user = Auth::user();
+        $schoolOwner = $user->schoolOwner;
+        $schoolIds = $schoolOwner->schools->pluck('id')->toArray();
+        $branches = Branch::where('owner_id', $schoolOwner->id)
+            ->whereIn('school_id', $schoolIds)
+            ->get();
+
         $instructor = Instructor::find($id);
-        return view('pages.schoolowner.instructor.update_instructor', compact('instructor'));
+        return view('pages.schoolowner.instructor.update_instructor', compact('instructor', 'branches'));
     }
 
     public function updateInstructor(Request $request)
@@ -198,12 +206,12 @@ class InstructorController extends Controller
                 'license_end_date' => 'required|date|after:license_start_date',
                 'experience' => 'nullable|string|max:50',
                 'gender' => 'required|in:male,female',
-                // 'branch' => 'required|exists:branches,id', // Ensure the branch exists
+                'branch' => 'required|exists:branches,id', // Ensure the branch exists
                 'picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
                 'password' => 'nullable|string|min:8|confirmed', // Validate password if provided
             ]);
 
-            // Find the instructor
+            // Find the instructor, employee, and user
             $instructor = Instructor::findOrFail($instructor_id);
             $employee = Employee::findOrFail($employee_id);
             $user = User::findOrFail($user_id);
@@ -215,17 +223,17 @@ class InstructorController extends Controller
                 if ($employee->picture) {
                     Storage::disk('public')->delete($employee->picture);
                 }
-                // Generate unique filename using timestamp or random string
-                $fileExtension = $request->file('picture')->getClientOriginalExtension(); // Get the file extension
-                $uniqueFileName = 'instructor_' . Str::random(10) . '.' . $fileExtension; // Generate unique file name
+                // Generate unique filename using random string
+                $fileExtension = $request->file('picture')->getClientOriginalExtension();
+                $uniqueFileName = 'instructor_' . Str::random(10) . '.' . $fileExtension;
 
                 // Store new picture
                 $profilePicturePath = $request->file('picture')->storeAs('Instructor', $uniqueFileName, 'public');
             }
 
-            // Handle password update if a new password is provided
-            if ($request->password) {
-                $user->password = Hash::make($request->password); // Hash the new password
+            // Handle password update if a new password is provided and non-empty
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->password);
             }
 
             // Update User (related to Instructor)
@@ -241,6 +249,7 @@ class InstructorController extends Controller
             $employee->id_card_number = $request->id_card_number;
             $employee->picture = $profilePicturePath;
             $employee->gender = $request->gender;
+            $employee->branch_id = $request->branch;
             $employee->save();
 
             // Update Instructor (related to Employee)
@@ -249,7 +258,6 @@ class InstructorController extends Controller
             $instructor->license_start_date = $request->license_start_date;
             $instructor->license_end_date = $request->license_end_date;
             $instructor->experience = $request->experience;
-            // $instructor->branch_id = $request->branch;
             $instructor->save();
 
             // Commit transaction
@@ -259,16 +267,10 @@ class InstructorController extends Controller
             return redirect()->route('schoolowner.instructors')
                 ->with('success', 'Instructor updated successfully.');
         } catch (ValidationException $e) {
-
             DB::rollBack();
-            dd($e->validator->errors()->first());
-            return back()->withErrors($e->errors())
-                ->withInput(); // Return back with errors and input
+            return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            // Handle any other errors
-            dd($e->getMessage(),  $e->getTraceAsString());
             DB::rollBack();
-            // Log the error for debugging
             Log::error('Error updating instructor: ' . $e->getMessage());
             return back()->with('error', 'An error occurred while updating the instructor. Please try again.');
         }

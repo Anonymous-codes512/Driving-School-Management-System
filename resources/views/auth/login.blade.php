@@ -7,7 +7,9 @@
     <title>Login - GOFTECH</title>
     @vite('resources/css/app.css')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
-    <!-- Removed Alpine.js script -->
+     <!-- Toastr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+
 </head>
 
 <body class="bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center min-h-screen font-sans">
@@ -102,7 +104,7 @@
             © 2025 GOFTECH. All rights reserved.
         </p>
     </div>
-
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const togglePassword = document.getElementById('togglePassword');
@@ -123,6 +125,41 @@
                 }
             });
         });
+    </script>
+    <!-- jQuery (Toastr depends on jQuery) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "5000",
+            "escapeHtml": false
+        };
+
+        @if (session('success'))
+            toastr.success({!! json_encode(session('success')) !!});
+        @endif
+
+        @if (session('error'))
+            toastr.error({!! json_encode(session('error')) !!});
+        @endif
+
+        @if (session('info'))
+            toastr.info({!! json_encode(session('info')) !!});
+        @endif
+
+        @if (session('warning'))
+            toastr.warning({!! json_encode(session('warning')) !!});
+        @endif
+
+        @if ($errors->any())
+            @foreach ($errors->all() as $error)
+                toastr.error({!! json_encode($error) !!});
+            @endforeach
+        @endif
     </script>
 </body>
 

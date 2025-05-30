@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('license_city');
             $table->date('license_start_date');
             $table->date('license_end_date');
-            $table->string('experience')->nullable();
+            $table->string('experience');
             $table->string('license_number');
             $table->timestamps();
         });

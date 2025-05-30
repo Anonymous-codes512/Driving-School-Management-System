@@ -8,6 +8,8 @@ use App\Http\Controllers\SchoolOwner\CourseController;
 use App\Http\Controllers\SchoolOwner\DashboardController as SchoolOwnerDashboardController;
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboardController;
 use App\Http\Controllers\SchoolOwner\InstructorController;
+use App\Http\Controllers\SchoolOwner\InvoiceController;
+use App\Http\Controllers\SchoolOwner\StudentController;
 use App\Http\Controllers\SuperAdmin\SchoolController;
 use App\Http\Controllers\SuperAdmin\SubscriptionController;
 use Illuminate\Support\Facades\Route;
@@ -83,15 +85,18 @@ Route::middleware(['custom.auth:schoolowner'])->group(function () {
     Route::post('/schoolowner/instructors/add_instructor', [InstructorController::class, 'addInstructor'])->name('schoolowner.instructors.add_instructor');
     Route::get('/schoolowner/instructors/show_edit_instructor/{id}', [InstructorController::class, 'showEditInstructorForm'])->name('schoolowner.instructors.show_edit_instructor_form');
     Route::post('/schoolowner/instructors/update_instructor', [InstructorController::class, 'updateInstructor'])->name('schoolowner.instructors.update_instructor');
+    Route::post('/schoolowner/instructors/update_instructor', [InstructorController::class, 'updateInstructor'])->name('schoolowner.instructors.update_instructor');
     Route::post('/schoolowner/instructors/delete_instructor', [InstructorController::class, 'deleteInstructor'])->name('schoolowner.instructors.delete_instructor');
 
-    Route::get('/schoolowner/students', function () {
-        return view('pages.schoolowner.students');
-    })->name('schoolowner.students');
 
-    Route::get('/schoolowner/invoices', function () {
-        return view('pages.schoolowner.invoices');
-    })->name('schoolowner.invoices');
+    Route::get('/schoolowner/students', [StudentController::class, 'students'])->name('schoolowner.students');
+    Route::get('/schoolowner/students/show_add_student_form', [StudentController::class, 'showAddStudentForm'])->name('schoolowner.students.show_add_student_form');
+    Route::post('/schoolowner/students/add_student', [StudentController::class, 'addStudent'])->name('schoolowner.students.add_student');
+    Route::get('/schoolowner/students/show_edit_student_form', [StudentController::class, 'showEditStudentForm'])->name('schoolowner.students.show_edit_student_form');
+    Route::post('/schoolowner/students/delete_student', [StudentController::class, 'deleteStudent'])->name('schoolowner.students.delete_student');
+
+    Route::get('/schoolowner/invoices',[InvoiceController::class, 'invoices'])->name('schoolowner.invoices');
+    Route::get('/schoolowner/invoices/view_invoice/{id}',[InvoiceController::class, 'viewInvoice'])->name('schoolowner.invoices.view_invoice');
 
     Route::get('/schoolowner/banners', function () {
         return view('pages.schoolowner.banners');

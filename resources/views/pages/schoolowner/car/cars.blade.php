@@ -129,7 +129,7 @@
                             </td>
 
                             <td class="p-3 text-gray-600 truncate max-w-[100px]" title="{{ $car->carModel->name }}">
-                                {{ $car->carModel->name }}
+                                {{ $car->carModel->name }} ({{ ucfirst($car->carModel->transmission) }})
                             </td>
 
                             <td class="p-3 text-gray-600 truncate max-w-[300px]" title="{{ $car['registration_number'] }}">

@@ -65,25 +65,40 @@ class CarController extends Controller
     public function addCarModel(Request $request)
     {
         $messages = [
-            'name.required' => 'Please enter the car name.',
-            'name.unique' => 'This car name is already taken.',
-            'transmission.required' => 'Please select the transmission type.',
-            'transmission.in' => 'Transmission must be either automatic or manual.',
-            'description.required' => 'Please provide a description for the car model.',
-            'description.max' => 'Description can be maximum 1000 characters long.',
+            'name.required'          => 'Please enter the car name.',
+            'name.max'               => 'Name can be maximum 255 characters long.',
+            'transmission.required'  => 'Please select the transmission type.',
+            'transmission.in'        => 'Transmission must be either automatic or manual.',
+            'description.required'   => 'Please provide a description for the car model.',
+            'description.max'        => 'Description can be maximum 1000 characters long.',
+            'name.unique'            => 'A car model with this name AND transmission already exists.',
         ];
 
+        // Validate everything except the composite-unique check
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:car_models,name',
-            'transmission' => 'required|in:automatic,manual',
-            'description' => 'required|string|max:1000',
+            'name'          => 'required|string|max:255',
+            'transmission'  => ['required', Rule::in(['automatic', 'manual'])],
+            'description'   => 'required|string|max:1000',
         ], $messages);
+
+        // Now manually enforce that (name, transmission) pair is unique:
+        $exists = CarModel::where('name', $validated['name'])
+            ->where('transmission', $validated['transmission'])
+            ->exists();
+
+        if ($exists) {
+            return redirect()
+                ->back()
+                ->withErrors(['name' => $messages['name.unique']])
+                ->withInput();
+        }
 
         CarModel::create($validated);
 
         return redirect()->route('schoolowner.cars')
             ->with('success', 'Car model added successfully.');
     }
+
 
     public function updatedCarModel(Request $request)
     {

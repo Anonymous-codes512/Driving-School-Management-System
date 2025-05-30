@@ -206,12 +206,15 @@
                     </label>
                     <select name="gender" id="gender" required
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                        <option value="" disabled {{ old('gender', $instructor->employee->gender) ? '' : 'selected' }}>Please
+                        <option value="" disabled
+                            {{ old('gender', $instructor->employee->gender) ? '' : 'selected' }}>Please
                             Select Gender
                         </option>
-                        <option value="male" {{ old('gender', $instructor->employee->gender) == 'male' ? 'selected' : '' }}>Male
+                        <option value="male"
+                            {{ old('gender', $instructor->employee->gender) == 'male' ? 'selected' : '' }}>Male
                         </option>
-                        <option value="female" {{ old('gender', $instructor->employee->gender) == 'female' ? 'selected' : '' }}>
+                        <option value="female"
+                            {{ old('gender', $instructor->employee->gender) == 'female' ? 'selected' : '' }}>
                             Female</option>
                     </select>
                     @error('gender')
@@ -226,22 +229,22 @@
                     </label>
                     <select name="branch" id="branch" required
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                        <option value="" disabled {{ old('branch') ? '' : 'selected' }}>Please Select Branch
-                        </option>
-                        <option value="1" {{ old('branch') == '1' ? 'selected' : '' }}>Main Branch</option>
-                        <option value="2" {{ old('branch') == '2' ? 'selected' : '' }}>RawalPindi Branch</option>
-                        {{-- <option value="" disabled {{ old('branch', $instructor->branch_id) ? '' : 'selected' }}>
+                        <option value="" disabled
+                            {{ old('branch', $instructor->employee->branch_id ?? '') ? '' : 'selected' }}>
                             Please Select Branch
                         </option>
-                        <option value="1" {{ old('branch', $instructor->branch_id) == '1' ? 'selected' : '' }}>Main
-                            Branch</option>
-                        <option value="2" {{ old('branch', $instructor->branch_id) == '2' ? 'selected' : '' }}>
-                            RawalPindi Branch</option> --}}
+                        @foreach ($branches as $branch)
+                            <option value="{{ $branch->id }}"
+                                {{ old('branch', $instructor->employee->branch_id ?? '') == $branch->id ? 'selected' : '' }}>
+                                {{ $branch->name }}
+                            </option>
+                        @endforeach
                     </select>
                     @error('branch')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
+
 
                 <!-- Picture -->
                 <div>

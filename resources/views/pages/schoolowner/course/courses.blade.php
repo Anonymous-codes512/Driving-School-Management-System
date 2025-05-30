@@ -39,6 +39,18 @@
         .modal-backdrop {
             background-color: rgba(0, 0, 0, 0.5);
         }
+
+        /* Hide number input arrows - Chrome, Safari, Edge, Opera */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Hide number input arrows - Firefox */
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
     </style>
 
     <div class="p-6 max-w-7xl ml-60 relative">
@@ -284,7 +296,8 @@
                     <div class="flex justify-end gap-2 mt-4">
                         <button id="cancelAddCourseBtn" type="button"
                             class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel</button>
-                        <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Add
+                        <button type="submit"
+                            class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Add
                             Course</button>
                     </div>
                 </form>
@@ -382,7 +395,8 @@
                     <div class="flex justify-end gap-2 mt-4">
                         <button id="cancelEditCourseBtn" type="button"
                             class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel</button>
-                        <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Update
+                        <button type="submit"
+                            class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Update
                             Course</button>
                     </div>
                 </form>
@@ -403,7 +417,8 @@
                     <div class="flex justify-end gap-2">
                         <button id="cancelDeleteCourseBtn" type="button"
                             class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel</button>
-                        <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Delete
+                        <button type="submit"
+                            class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Delete
                             Course</button>
                     </div>
                 </form>

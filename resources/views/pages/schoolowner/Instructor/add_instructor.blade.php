@@ -215,13 +215,18 @@
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
                         <option value="" disabled {{ old('branch') ? '' : 'selected' }}>Please Select Branch
                         </option>
-                        <option value="1" {{ old('branch') == '1' ? 'selected' : '' }}>Main Branch</option>
-                        <option value="2" {{ old('branch') == '2' ? 'selected' : '' }}>RawalPindi Branch</option>
+
+                        @foreach ($branches as $branch)
+                            <option value="{{ $branch->id }}" {{ old('branch') == $branch->id ? 'selected' : '' }}>
+                                {{ $branch->name }}
+                            </option>
+                        @endforeach
                     </select>
                     @error('branch')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
+
 
                 {{-- Picture --}}
                 <div>
