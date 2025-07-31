@@ -57,10 +57,10 @@
                     class="inline-flex items-center justify-center w-8 h-8 text-gray-700 hover:bg-gray-100 active:bg-gray-200 select-none cursor-pointer">
                     <i class="bi bi-plus-lg"></i>
                 </a>
-                <a href="#" title="Filter"
+                {{-- <a href="#" title="Filter"
                     class="inline-flex items-center justify-center w-8 h-8 text-gray-700 hover:bg-gray-100 active:bg-gray-200 select-none cursor-pointer">
                     <i class="bi bi-funnel"></i>
-                </a>
+                </a> --}}
                 <a href="{{ $sortUrl }}" title="Sort by Instructor Name"
                     class="inline-flex items-center justify-center w-8 h-8 text-gray-700 hover:bg-gray-100 active:bg-gray-200 select-none cursor-pointer">
                     <i class="bi bi-arrow-down-up"></i>

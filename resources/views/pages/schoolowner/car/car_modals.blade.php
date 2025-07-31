@@ -41,8 +41,8 @@
 
             <div class="flex justify-end gap-2">
                 <button id="cancelAddModelBtn"
-                    class="bg-black text-white font-semibold px-6 py-2 rounded-md">Cancel</button>
-                <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200">Add Car
+                    class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel</button>
+                <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Add Car
                     Model</button>
             </div>
         </form>
@@ -91,8 +91,8 @@
 
             <div class="flex justify-end gap-2">
                 <button id="cancelEditModelBtn"
-                    class="bg-black text-white font-semibold px-6 py-2 rounded-md">Cancel</button>
-                <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200">Update Car
+                    class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel</button>
+                <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Update Car
                     Model</button>
             </div>
         </form>
@@ -108,13 +108,13 @@
         <p class="mb-4 text-gray-700">Are you sure you want to delete this car model?</p>
 
         <div class="flex justify-center gap-4">
-            <button id="cancelDeleteModelBtn" class="bg-black text-white px-6 py-2 rounded-lg">Cancel</button>
+            <button id="cancelDeleteModelBtn" class="bg-black text-white px-6 py-2 rounded-lg cursor-pointer">Cancel</button>
 
             <form id="deleteModelForm" method="POST" action="">
                 @csrf
                 <input type="hidden" name="car_model_id" id="deleteCarModelId" value="">
                 <button type="submit"
-                    class="border border-black px-6 py-2 rounded-lg hover:bg-indigo-200">Delete</button>
+                    class="border border-black px-6 py-2 rounded-lg hover:bg-indigo-200 cursor-pointer">Delete</button>
             </form>
         </div>
     </div>
@@ -155,9 +155,9 @@
             </div>
 
             <div class="flex justify-end gap-2">
-                <button id="cancelAddCarBtn" class="bg-black text-white font-semibold px-6 py-2 rounded-md">Cancel
+                <button id="cancelAddCarBtn" class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel
                 </button>
-                <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200">Add
+                <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Add
                     Car</button>
             </div>
         </form>
@@ -195,9 +195,9 @@
             </div>
 
             <div class="flex justify-end gap-2">
-                <button id="cancelEditCarBtn" class="bg-black text-white font-semibold px-6 py-2 rounded-md">Cancel
+                <button id="cancelEditCarBtn" class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel
                 </button>
-                <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200">Update
+                <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Update
                     Car</button>
             </div>
         </form>
@@ -213,12 +213,12 @@
         <p class="mb-4 text-gray-700">Are you sure you want to delete this car?</p>
 
         <div class="flex justify-center gap-4">
-            <button id="cancelDeleteCarBtn" class="bg-black text-white px-6 py-2 rounded-lg">Cancel</button>
+            <button id="cancelDeleteCarBtn" class="bg-black text-white px-6 py-2 rounded-lg cursor-pointer">Cancel</button>
 
             <form id="deleteCarForm" method="POST" action="">
                 @csrf
                 <input type="hidden" name="car_id" id="deleteCarId" value="">
-                <button type="submit" class="border border-black px-6 py-2 rounded-lg hover:bg-indigo-200">Delete
+                <button type="submit" class="border border-black px-6 py-2 rounded-lg hover:bg-indigo-200 cursor-pointer">Delete
                 </button>
             </form>
         </div>

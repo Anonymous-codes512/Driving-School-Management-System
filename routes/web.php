@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\SchoolOwner\AdmissionController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\SchoolOwner\BannerController;
 use App\Http\Controllers\SchoolOwner\BranchController;
 use App\Http\Controllers\SchoolOwner\CarController;
 use App\Http\Controllers\SchoolOwner\CourseController;
@@ -97,10 +98,12 @@ Route::middleware(['custom.auth:schoolowner'])->group(function () {
 
     Route::get('/schoolowner/invoices',[InvoiceController::class, 'invoices'])->name('schoolowner.invoices');
     Route::get('/schoolowner/invoices/view_invoice/{id}',[InvoiceController::class, 'viewInvoice'])->name('schoolowner.invoices.view_invoice');
+    Route::post('/schoolowner/invoices/update',[InvoiceController::class, 'updateInvoice'])->name('schoolowner.invoice.update');
 
-    Route::get('/schoolowner/banners', function () {
-        return view('pages.schoolowner.banners');
-    })->name('schoolowner.banners');
+    Route::get('/schoolowner/banners',[BannerController::class, 'banners'])->name('schoolowner.banners');
+    Route::post('/schoolowner/banners/add_banner',[BannerController::class, 'addBanner'])->name('schoolowner.banner.add_banner');
+    Route::post('/schoolowner/banners/update_banner',[BannerController::class, 'updateBanner'])->name('schoolowner.banner.update_banner');
+    Route::post('/schoolowner/banners/delete_banner',[BannerController::class, 'deleteBanner'])->name('schoolowner.banner.delete_banner');
 
     Route::get('/schoolowner/expenses', function () {
         return view('pages.schoolowner.expenses');

@@ -75,7 +75,6 @@
             </div>
         </div>
 
-        <!-- Instructors Table -->
         <div class="scrollbar-hidden overflow-x-auto max-w-[calc(100vw-15rem)] mt-3">
             <div class="text-gray-700 font-semibold text-lg pl-2 mb-2">All Students</div>
             <table class="table-fixed border-separate me-10" style="border-spacing: 0 12px;">

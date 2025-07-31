@@ -56,7 +56,6 @@ class CarController extends Controller
         ]);
     }
 
-
     public function showAddCarModelForm()
     {
         return view('pages.schoolowner.car.add_car');
@@ -98,7 +97,6 @@ class CarController extends Controller
         return redirect()->route('schoolowner.cars')
             ->with('success', 'Car model added successfully.');
     }
-
 
     public function updatedCarModel(Request $request)
     {

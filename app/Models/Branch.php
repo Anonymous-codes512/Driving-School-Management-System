@@ -32,4 +32,12 @@ class Branch extends Model
     {
         return $this->belongsTo(School::class);
     }
+
+    /**
+     * Branch have many banners.
+     */
+    public function banners()
+    {
+        return $this->hasMany(Banner::class);
+    }
 }
