@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('car_expenses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('car_id')->constrained('cars')->onDelete('cascade');
-            $table->enum('expense_type', ['maintenance', 'fuel', 'rent']); // Added 'rent' here
+            $table->enum('expense_type', ['Maintenance', 'Fuel', 'Rent']); // Added 'rent' here
             $table->decimal('amount', 8, 2);
             $table->date('expense_date');
             $table->timestamps();

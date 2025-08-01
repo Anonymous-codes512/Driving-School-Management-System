@@ -15,7 +15,7 @@ class Coupon extends Model
         'expiry_date',
         'is_active',
         'phone',
-        'email', //, Added email field to the fillable array
+        'email',
         'redeemed'
     ];
 }

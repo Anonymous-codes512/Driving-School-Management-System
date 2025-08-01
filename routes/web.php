@@ -5,8 +5,10 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\SchoolOwner\BannerController;
 use App\Http\Controllers\SchoolOwner\BranchController;
 use App\Http\Controllers\SchoolOwner\CarController;
+use App\Http\Controllers\SchoolOwner\CouponController;
 use App\Http\Controllers\SchoolOwner\CourseController;
 use App\Http\Controllers\SchoolOwner\DashboardController as SchoolOwnerDashboardController;
+use App\Http\Controllers\SchoolOwner\ExpenseController;
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboardController;
 use App\Http\Controllers\SchoolOwner\InstructorController;
 use App\Http\Controllers\SchoolOwner\InvoiceController;
@@ -105,9 +107,16 @@ Route::middleware(['custom.auth:schoolowner'])->group(function () {
     Route::post('/schoolowner/banners/update_banner',[BannerController::class, 'updateBanner'])->name('schoolowner.banner.update_banner');
     Route::post('/schoolowner/banners/delete_banner',[BannerController::class, 'deleteBanner'])->name('schoolowner.banner.delete_banner');
 
-    Route::get('/schoolowner/expenses', function () {
-        return view('pages.schoolowner.expenses');
-    })->name('schoolowner.expenses');
+    Route::get('/schoolowner/expenses',[ExpenseController::class, 'expenses'])->name('schoolowner.expenses');
+// Car Expense
+    Route::post('/schoolowner/expenses/car/add', [ExpenseController::class, 'addCarExpense'])->name('schoolowner.expenses.add_car_expense');
+    Route::post('/schoolowner/expenses/car/update', [ExpenseController::class, 'updateCarExpense'])->name('schoolowner.expenses.update_car_expense');
+    Route::post('/schoolowner/expenses/car/delete', [ExpenseController::class, 'deleteCarExpense'])->name('schoolowner.expenses.delete_car_expense');
+
+    // Other Expense
+    Route::post('/schoolowner/expenses/other/add', [ExpenseController::class, 'addOtherExpense'])->name('schoolowner.expenses.add_other_expense');
+    Route::post('/schoolowner/expenses/other/update', [ExpenseController::class, 'updateOtherExpense'])->name('schoolowner.expenses.update_other_expense');
+    Route::post('/schoolowner/expenses/other/delete', [ExpenseController::class, 'deleteOtherExpense'])->name('schoolowner.expenses.delete_other_expense');
 
     Route::get('/schoolowner/attendance', function () {
         return view('pages.schoolowner.attendance');
@@ -121,9 +130,7 @@ Route::middleware(['custom.auth:schoolowner'])->group(function () {
         return view('pages.schoolowner.leaves');
     })->name('schoolowner.leaves');
 
-    Route::get('/schoolowner/coupons', function () {
-        return view('pages.schoolowner.coupons');
-    })->name('schoolowner.coupons');
+    Route::get('/schoolowner/coupons', [CouponController::class, 'coupons'])->name('schoolowner.coupons');
 
     Route::get('/schoolowner/inquiries', function () {
         return view('pages.schoolowner.inquiries');

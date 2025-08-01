@@ -37,4 +37,8 @@ class Employee extends Model
     {
         return $this->belongsTo(Branch::class);
     }
+    public function otherExpenses()
+    {
+        return $this->hasMany(OtherExpense::class);
+    }
 }

@@ -12,6 +12,7 @@ class Car extends Model
     protected $fillable = [
         'car_model_id',
         'registration_number',
+        'status',
     ];
 
     /**

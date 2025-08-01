@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cars', function (Blueprint $table) {
+        Schema::create('other_expenses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('car_model_id')->constrained('car_models')->onDelete('cascade'); // Link to car models
-            $table->string('registration_number')->unique(); // Unique for each car
-            $table->boolean('status')->default(true);
+            
+            $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
+            $table->enum('expense_type', ['Salary', 'Utilities', 'Other']);
+            $table->decimal('amount', 8, 2);
+            $table->date('expense_date');
+            
             $table->timestamps();
         });
     }
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cars');
+        Schema::dropIfExists('other_expenses');
     }
 };
