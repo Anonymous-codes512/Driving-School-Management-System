@@ -11,12 +11,12 @@
 
         <!-- Submitted Forms Header -->
         <div class="mb-6">
-            <h2 class="text-indigo-400 font-semibold text-lg cursor-pointer select-none">Submitted Forms</h2>
+            <h2 class="text-indigo-400 font-semibold text-lg select-none">Submitted Forms</h2>
         </div>
 
         <!-- Admissions Table -->
-        <div>
-            <table class="w-full table-fixed border-separate" style="border-spacing: 0 12px;">
+        <div class="scrollbar-hidden overflow-x-auto max-w-[calc(100vw-15rem)] mt-3">
+            <table class="table-fixed border-separate me-10" style="border-spacing: 0 12px;">
                 <thead>
                     <tr class="text-left text-gray-600 text-sm font-semibold select-none">
                         <th class="p-3">Name</th>
@@ -30,21 +30,21 @@
                     @foreach ($admissions as $index => $admission)
                         <tr class="{{ $index % 2 == 0 ? 'bg-[#EDEEFc]' : 'bg-[#E6F1FD]' }} rounded-lg shadow-sm"
                             style="border-radius: 10px;">
-                            <td class="p-3 font-semibold text-gray-900 truncate max-w-[100px]"
-                                title="{{ $admission['name'] }}"> {{ $admission['name'] }}
+                            <td class="p-3 font-semibold text-gray-900 "
+                                title="{{ $admission->user->name }}"> {{ $admission->user->name }}
                             </td>
-                            <td class="p-3 text-gray-600 truncate max-w-[100px]" title="{{ $admission['pickup_sector'] }}">
-                                {{ $admission['pickup_sector'] }}
+                            <td class="p-3 text-gray-600 " title="{{ $admission->pickup_sector }}">
+                                {{ $admission->pickup_sector ?? 'N/A' }}
                             </td>
-                            <td class="p-3 text-gray-600 truncate max-w-[100px]" title="{{ $admission['phone'] }}">
+                            <td class="p-3 text-gray-600 " title="{{ $admission['phone'] }}">
                                 {{ $admission['phone'] }}
                             </td>
                             <td class="p-3 text-center font-medium text-gray-700 whitespace-nowrap"
                                 style="min-width: 100px;">
                                 {{ \Carbon\Carbon::parse($admission['admission_date'])->format('M d, Y') }}
                             </td>
-                            <td class="p-3 truncate max-w-[300px]"
-                                title="{{ $admission['course'] }} - {{ $admission['price'] }} - {{ $admission['duration'] }}">
+                            <td class="p-3 "
+                                title="{{ $admission->course->name }} - {{ $admission->course->fees }} - {{ $admission->course->duration_days }}days">
                                 <span
                                     class="inline-block px-3 py-1 rounded-lg text-sm whitespace-nowrap
                         @if (str_contains(strtolower($admission['course']), 'automatic')) bg-yellow-200 text-yellow-600
@@ -52,8 +52,8 @@
                         @elseif(str_contains(strtolower($admission['course']), 'alto')) bg-green-100 text-green-600
                         @else bg-gray-300 text-gray-600 @endif
                         ">
-                                    {{ $admission['course'] }} - {{ $admission['price'] }} PKR -
-                                    {{ $admission['duration'] }}
+                                    {{ $admission->course->carModel->name }} ({{ $admission->course->carModel->transmission }}) - {{ $admission->course->fees }} PKR -
+                                    {{ $admission->course->duration_days }} days
                                 </span>
                             </td>
                         </tr>

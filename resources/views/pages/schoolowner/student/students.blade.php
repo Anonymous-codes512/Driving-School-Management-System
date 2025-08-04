@@ -186,16 +186,16 @@
         @endif
 
         <!-- DELETE INSTRUCTOR CONFIRMATION MODAL -->
-        <div id="deleteInstructorModal" class="fixed inset-0 flex items-center justify-center z-50 hidden"
+        <div id="deleteStudentModal" class="fixed inset-0 flex items-center justify-center z-50 hidden"
             style="backdrop-filter: blur(6px); background-color: rgba(0,0,0,0.35);">
             <div class="bg-gradient-to-b from-indigo-300 to-indigo-400 rounded-3xl p-6 max-w-sm w-full relative shadow-lg">
                 <h2 class="text-xl font-semibold mb-4 text-center">Confirm Deletion</h2>
 
                 <!-- Image and Name Section -->
                 <div class="flex flex-col items-center mb-6">
-                    <img src="" id="instructorImage" alt="Student's Profile Picture"
+                    <img src="" id="studentImage" alt="Student's Profile Picture"
                         class="w-24 h-24 rounded-full border-2 border-white mb-4" />
-                    <p class="text-lg text-gray-700 font-semibold" id="instructorToDeleteName">Student Name</p>
+                    <p class="text-lg text-gray-700 font-semibold" id="studentToDeleteName">Student Name</p>
                 </div>
 
                 <p class="mb-6 text-gray-700 text-center">Are you sure you want to delete this student?</p>
@@ -203,10 +203,10 @@
                 <form method="POST" action="{{ route('schoolowner.students.delete_student')}}"
                     id="deleteInstructorForm" class="space-y-6">
                     @csrf
-                    <input type="hidden" id="delete_instructor_id" name="instructor_id" />
+                    <input type="hidden" id="delete_student_id" name="student_id" />
 
                     <div class="flex justify-end gap-2">
-                        <button id="cancelDeleteInstructorBtn" type="button"
+                        <button id="cancelDeleteStudentBtn" type="button"
                             class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel</button>
                         <button type="submit"
                             class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Delete
@@ -222,33 +222,33 @@
                 // Delete buttons click
                 document.querySelectorAll('.delete-button').forEach(button => {
                     button.addEventListener('click', function() {
-                        const instructorId = this.getAttribute('data-id');
-                        const instructorName = this.getAttribute('data-name');
-                        const instructorImage = this.getAttribute(
+                        const studentId = this.getAttribute('data-id');
+                        const studentName = this.getAttribute('data-name');
+                        const studentImage = this.getAttribute(
                             'data-image'); // Make sure to add this attribute with image URL
 
                         // Set hidden input value
-                        document.getElementById('delete_instructor_id').value = instructorId;
+                        document.getElementById('delete_student_id').value = studentId;
 
                         // Set the name and image
-                        document.getElementById('instructorToDeleteName').textContent = instructorName;
-                        document.getElementById('instructorImage').src = instructorImage;
+                        document.getElementById('studentToDeleteName').textContent = studentName;
+                        document.getElementById('studentImage').src = studentImage;
 
                         // Show the modal
-                        document.getElementById('deleteInstructorModal').classList.remove('hidden');
+                        document.getElementById('deleteStudentModal').classList.remove('hidden');
                     });
                 });
 
                 // Cancel button click
-                document.getElementById('cancelDeleteInstructorBtn').addEventListener('click', e => {
+                document.getElementById('cancelDeleteStudentBtn').addEventListener('click', e => {
                     e.preventDefault();
-                    document.getElementById('deleteInstructorModal').classList.add('hidden');
+                    document.getElementById('deleteStudentModal').classList.add('hidden');
                 });
 
                 // Close modal on clicking backdrop
-                document.getElementById('deleteInstructorModal').addEventListener('click', e => {
-                    if (e.target === document.getElementById('deleteInstructorModal')) {
-                        document.getElementById('deleteInstructorModal').classList.add('hidden');
+                document.getElementById('deleteStudentModal').addEventListener('click', e => {
+                    if (e.target === document.getElementById('deleteStudentModal')) {
+                        document.getElementById('deleteStudentModal').classList.add('hidden');
                     }
                 });
             });

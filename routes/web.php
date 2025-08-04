@@ -12,6 +12,7 @@ use App\Http\Controllers\SchoolOwner\ExpenseController;
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboardController;
 use App\Http\Controllers\SchoolOwner\InstructorController;
 use App\Http\Controllers\SchoolOwner\InvoiceController;
+use App\Http\Controllers\SchoolOwner\LeaveController;
 use App\Http\Controllers\SchoolOwner\StudentController;
 use App\Http\Controllers\SuperAdmin\SchoolController;
 use App\Http\Controllers\SuperAdmin\SubscriptionController;
@@ -57,9 +58,9 @@ Route::middleware(['custom.auth:superadmin'])->group(function () {
 });
 
 Route::middleware(['custom.auth:schoolowner'])->group(function () {
-   
+
     Route::get('/schoolowner/dashboard', [SchoolOwnerDashboardController::class, 'dashboard'])->name('schoolowner.dashboard');
-   
+
     Route::get('/schoolowner/branches', [BranchController::class, 'branches'])->name('schoolowner.branches');
     Route::post('/schoolowner/branch/add_branch', [BranchController::class, 'addBranch'])->name('schoolowner.branches.add_branch');
     Route::post('/schoolowner/branch/update_branch', [BranchController::class, 'updateBranch'])->name('schoolowner.branches.update_branch');
@@ -98,17 +99,17 @@ Route::middleware(['custom.auth:schoolowner'])->group(function () {
     Route::get('/schoolowner/students/show_edit_student_form', [StudentController::class, 'showEditStudentForm'])->name('schoolowner.students.show_edit_student_form');
     Route::post('/schoolowner/students/delete_student', [StudentController::class, 'deleteStudent'])->name('schoolowner.students.delete_student');
 
-    Route::get('/schoolowner/invoices',[InvoiceController::class, 'invoices'])->name('schoolowner.invoices');
-    Route::get('/schoolowner/invoices/view_invoice/{id}',[InvoiceController::class, 'viewInvoice'])->name('schoolowner.invoices.view_invoice');
-    Route::post('/schoolowner/invoices/update',[InvoiceController::class, 'updateInvoice'])->name('schoolowner.invoice.update');
+    Route::get('/schoolowner/invoices', [InvoiceController::class, 'invoices'])->name('schoolowner.invoices');
+    Route::get('/schoolowner/invoices/view_invoice/{id}', [InvoiceController::class, 'viewInvoice'])->name('schoolowner.invoices.view_invoice');
+    Route::post('/schoolowner/invoices/update', [InvoiceController::class, 'updateInvoice'])->name('schoolowner.invoice.update');
 
-    Route::get('/schoolowner/banners',[BannerController::class, 'banners'])->name('schoolowner.banners');
-    Route::post('/schoolowner/banners/add_banner',[BannerController::class, 'addBanner'])->name('schoolowner.banner.add_banner');
-    Route::post('/schoolowner/banners/update_banner',[BannerController::class, 'updateBanner'])->name('schoolowner.banner.update_banner');
-    Route::post('/schoolowner/banners/delete_banner',[BannerController::class, 'deleteBanner'])->name('schoolowner.banner.delete_banner');
+    Route::get('/schoolowner/banners', [BannerController::class, 'banners'])->name('schoolowner.banners');
+    Route::post('/schoolowner/banners/add_banner', [BannerController::class, 'addBanner'])->name('schoolowner.banner.add_banner');
+    Route::post('/schoolowner/banners/update_banner', [BannerController::class, 'updateBanner'])->name('schoolowner.banner.update_banner');
+    Route::post('/schoolowner/banners/delete_banner', [BannerController::class, 'deleteBanner'])->name('schoolowner.banner.delete_banner');
 
-    Route::get('/schoolowner/expenses',[ExpenseController::class, 'expenses'])->name('schoolowner.expenses');
-// Car Expense
+    Route::get('/schoolowner/expenses', [ExpenseController::class, 'expenses'])->name('schoolowner.expenses');
+    // Car Expense
     Route::post('/schoolowner/expenses/car/add', [ExpenseController::class, 'addCarExpense'])->name('schoolowner.expenses.add_car_expense');
     Route::post('/schoolowner/expenses/car/update', [ExpenseController::class, 'updateCarExpense'])->name('schoolowner.expenses.update_car_expense');
     Route::post('/schoolowner/expenses/car/delete', [ExpenseController::class, 'deleteCarExpense'])->name('schoolowner.expenses.delete_car_expense');
@@ -123,14 +124,15 @@ Route::middleware(['custom.auth:schoolowner'])->group(function () {
     })->name('schoolowner.attendance');
 
     Route::get('/schoolowner/classes', function () {
-        return view('pages.schoolowner.classes');
+        return view('pages.schoolowner.class.classes');
     })->name('schoolowner.classes');
 
-    Route::get('/schoolowner/leaves', function () {
-        return view('pages.schoolowner.leaves');
-    })->name('schoolowner.leaves');
+    Route::get('/schoolowner/leaves', [LeaveController::class, 'leaves'])->name('schoolowner.leaves');
 
     Route::get('/schoolowner/coupons', [CouponController::class, 'coupons'])->name('schoolowner.coupons');
+    Route::post('/schoolowner/coupons/store', [CouponController::class, 'store'])->name('schoolowner.coupons.store');
+    Route::post('/schoolowner/coupons/update', [CouponController::class, 'update'])->name('schoolowner.coupons.update');
+    Route::post('/schoolowner/coupons/delete', [CouponController::class, 'delete'])->name('schoolowner.coupons.delete');
 
     Route::get('/schoolowner/inquiries', function () {
         return view('pages.schoolowner.inquiries');

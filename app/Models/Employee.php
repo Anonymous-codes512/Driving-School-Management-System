@@ -41,4 +41,7 @@ class Employee extends Model
     {
         return $this->hasMany(OtherExpense::class);
     }
+    public function leaves(){
+        return $this->hasMany(Leave::class, 'employee_id');
+    }
 }

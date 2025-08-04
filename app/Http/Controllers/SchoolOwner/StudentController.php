@@ -253,4 +253,8 @@ class StudentController extends Controller
             return back()->withErrors(['error' => 'Failed to add student. Please try again.'])->withInput();
         }
     }
+
+    public function deleteStudent(Request $request){
+    dd($request->all());
+    }
 }

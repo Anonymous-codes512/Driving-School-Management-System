@@ -73,6 +73,10 @@ class Student extends Model
         return $this->hasMany(Schedule::class, 'student_id'); // Added foreign key explicitly for clarity
     }
 
+    public function leaves(){
+        return $this->hasMany(Leave::class, 'student_id');
+    }
+
     // Student has one Invoice through Schedule
     public function invoice()
     {
