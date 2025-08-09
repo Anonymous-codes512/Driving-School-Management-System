@@ -13,8 +13,12 @@ return new class extends Migration
     {
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('branch_id');
+            
+            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->enum('course_category', ['regular', 'custom']);
             $table->string('name')->nullable();
+
             $table->foreignId('car_model_id')->nullable()->constrained('car_models')->onDelete('cascade');
             $table->integer('duration_days')->nullable();
             $table->integer('duration_minutes')->nullable();

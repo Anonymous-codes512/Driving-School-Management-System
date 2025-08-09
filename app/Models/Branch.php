@@ -12,6 +12,14 @@ class Branch extends Model
     protected $fillable = [
         'name',
         'address',
+        'branch_phone_number',
+        'branch_email_address',
+        'website',
+        'opening_hours',
+        'closing_hours',
+        'slots_length',
+        'branch_code',
+        'location',
         'status',
         'owner_id',
         'school_id',
@@ -39,5 +47,14 @@ class Branch extends Model
     public function banners()
     {
         return $this->hasMany(Banner::class);
+    }
+
+    public function cars()
+    {
+        return $this->hasMany(Car::class);
+    }
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
     }
 }

@@ -15,6 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('address');
+            $table->string('branch_phone_number')->nullable();
+            $table->string('branch_email_address')->nullable();
+            $table->string('website')->nullable();
+            $table->string('opening_hours')->nullable();
+            $table->string(column: 'closing_hours')->nullable();
+            $table->string('slots_length')->nullable();
+            $table->string('branch_code')->nullable();
+            $table->string('location')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->foreignId('owner_id')->constrained('school_owners')->onDelete('cascade'); // owner relation
             $table->foreignId('school_id')->constrained('schools')->onDelete('cascade'); // owner relation

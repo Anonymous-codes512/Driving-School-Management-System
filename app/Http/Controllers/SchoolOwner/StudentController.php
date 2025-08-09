@@ -61,25 +61,30 @@ class StudentController extends Controller
 
         return view('pages.schoolowner.student.students', compact('students'));
     }
-
     public function showAddStudentForm()
     {
         $user = Auth::user();
-
         $schoolIds = $user->schoolOwner->schools->pluck('id')->toArray();
-        $instructors = Instructor::all();
+
+        $branches = Branch::with(['cars']) // load cars if needed
+            ->where('owner_id', $user->schoolOwner->id)
+            ->whereIn('school_id', $schoolIds)
+            ->get();
+
+        $instructors = Instructor::with(['schedules'])->get(); // include schedules
         $courses = Course::all();
         $carModels = CarModel::all();
         $cars = Car::all();
-        $branches = Branch::where('owner_id', $user->schoolOwner->id)->whereIn('school_id', $schoolIds)->get();
 
         return view('pages.schoolowner.student.add_student', compact('instructors', 'courses', 'branches', 'carModels', 'cars'));
     }
 
+
     public function AddStudent(Request $request)
     {
-        DB::beginTransaction();
 
+        DB::beginTransaction();
+        // dd($request->all());
         try {
             // Validate request input
             $validated = $request->validate([
@@ -99,11 +104,11 @@ class StudentController extends Controller
 
                 'class_start_date' => 'required|date',
                 'class_end_date' => 'required|date|after_or_equal:class_start_date',
-                'instructor' => 'required|exists:employees,id',
+                'instructor_id' => 'required|exists:employees,id',
                 'class_start_time' => 'required|date_format:H:i',
                 'class_duration' => 'required|integer',
-                'branch' => 'required|exists:branches,id',
-                'timing_preference' => 'nullable|array',
+                'branch_id' => 'required|exists:branches,id',
+                'time_preference' => 'nullable|string|max:50',
 
                 'invoice_date' => 'required|date',
                 'total_amount' => 'required|numeric|min:0',
@@ -121,13 +126,14 @@ class StudentController extends Controller
                 $imagePath = $image->storeAs('Students', $uniqueName, 'public'); // stores under storage/app/public/Students/
             }
 
-            $timingPreference = $validated['timing_preference'] ?? [];
+            $timingPreference = $validated['time_preference'] ?? 'N/A';
 
             $originalStartTime = Carbon::createFromFormat('H:i', $validated['class_start_time']);
             $adjustedStartTime = $originalStartTime->copy();
             $additionalMinutes = 0;
 
-            if (in_array('before', $timingPreference) && $originalStartTime->gt(Carbon::createFromTime(8, 0))) {
+            if ($timingPreference === 'before' && $originalStartTime->gt(Carbon::createFromTime(8, 0))) {
+
                 $adjustedStartTime->subMinutes(30);
                 $additionalMinutes += 30;
             }
@@ -135,7 +141,7 @@ class StudentController extends Controller
             $adjustedClassDuration = $validated['class_duration'] + $additionalMinutes;
             $adjustedEndTime = $adjustedStartTime->copy()->addMinutes($adjustedClassDuration);
 
-            if (in_array('after', $timingPreference) && $adjustedEndTime->lte(Carbon::createFromTime(20, 0))) {
+            if ($timingPreference === 'after' && $originalStartTime->gt(Carbon::createFromTime(8, 0))) {
                 $adjustedClassDuration += 30;
                 $adjustedEndTime->addMinutes(30);
             }
@@ -189,16 +195,16 @@ class StudentController extends Controller
                 'email' => $validated['email'],
                 'coupon_code' => $validated['coupon_code'] ?? null,
                 'course_id' => $validated['course'],
-                'instructor_id' => $validated['instructor'],
-                'branch_id' => $validated['branch'],
-                'timing_preference' => $timingPreference ? implode(', ', $timingPreference) : null,
+                'instructor_id' => $validated['instructor_id'],
+                'branch_id' => $validated['branch_id'],
+                'time_preference' => $timingPreference,
                 'status' => 'active',
                 'course_duration' => $course->duration_days,
             ]);
 
             $schedule = Schedule::create([
                 'student_id' => $student->id,
-                'instructor_id' => $validated['instructor'],
+                'instructor_id' => $validated['instructor_id'],
                 'vehicle_id' => $validated['car'],
                 'class_date' => $validated['class_start_date'],
                 'class_end_date' => $validated['class_end_date'],
@@ -232,12 +238,12 @@ class StudentController extends Controller
                 'advance_amount' => $validated['advance_amount'],
                 'total_amount' => $finalAmount,
                 'remaining_amount' => $validated['remaining_amount'],
-                'branch_id' => $validated['branch'],
+                'branch_id' => $validated['branch_id'],
             ]);
 
             // $user->notify(new WelcomeNotification($user));
 
-            $instructor = Instructor::find($validated['instructor']);
+            $instructor = Instructor::find($validated['instructor_id']);
             if ($instructor) {
                 // $instructor->employee->user->notify(new NewStudentAssignedNotification($student));
             }
@@ -254,7 +260,8 @@ class StudentController extends Controller
         }
     }
 
-    public function deleteStudent(Request $request){
-    dd($request->all());
+    public function deleteStudent(Request $request)
+    {
+        dd($request->all());
     }
 }

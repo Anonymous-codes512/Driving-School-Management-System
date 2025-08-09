@@ -4,10 +4,12 @@ namespace App\Http\Controllers\SchoolOwner;
 
 use App\Models\CarModel;
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\Car;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class CarController extends Controller
@@ -16,8 +18,9 @@ class CarController extends Controller
     {
         $search = $request->get('search', '');
         $sort = $request->get('sort', 'name_asc'); // Default sort ascending by name
+        $user = Auth::user();
 
-        $query = CarModel::query()->with('cars');
+        $query = CarModel::query()->with(['cars', 'cars.branch']);
 
         if ($search) {
             $searchLower = Str::lower($search);
@@ -28,7 +31,7 @@ class CarController extends Controller
                     ->orWhereRaw('LOWER(description) LIKE ?', ["%{$searchLower}%"]);
             });
         }
-
+ 
         // Sorting logic
         if ($sort === 'name_asc') {
             $query->orderBy('name', 'asc');
@@ -40,6 +43,8 @@ class CarController extends Controller
 
         $perPage = 15;
         $page = $request->get('page', 1);
+        $schoolIds = $user->schoolOwner->schools->pluck('id')->toArray();
+        $branches = Branch::where('owner_id', $user->schoolOwner->id)->whereIn('school_id', $schoolIds)->get();
 
         // Paginate car models with eager loaded cars
         $carModels = $query->paginate($perPage, ['*'], 'page', $page);
@@ -53,6 +58,7 @@ class CarController extends Controller
         return view('pages.schoolowner.car.cars', [
             'carModels' => $carModels,
             'cars' => $cars,
+            'branches' => $branches,
         ]);
     }
 
@@ -167,12 +173,14 @@ class CarController extends Controller
     {
         $messages = [
             'car_model_id.required' => 'Please select a car model.',
+            'branch_id.required' => 'Please select branch.',
             'registration_number.required' => 'Please enter the registration number.',
             'registration_number.unique' => 'This registration number is already taken.',
         ];
 
         $validated = $request->validate([
             'car_model_id' => 'required|exists:car_models,id',
+            'branch_id' => 'required|exists:branches,id',
             'registration_number' => 'required|string|max:255|unique:cars,registration_number',
         ], $messages);
 
@@ -206,8 +214,8 @@ class CarController extends Controller
 
         $validated = $request->validate([
             'car_model_id' => 'required|exists:car_models,id',
+            'branch_id' => 'exists:branches,id',
             'registration_number' => [
-                'required',
                 'string',
                 'max:255',
                 Rule::unique('cars')->ignore($carId),

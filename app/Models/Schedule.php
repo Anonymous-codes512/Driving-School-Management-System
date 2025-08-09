@@ -20,6 +20,10 @@ class Schedule extends Model
         'class_duration', // Add class_duration to the fillable array
 
     ];
+    protected $casts = [
+        'class_date' => 'datetime',
+        'class_end_date' => 'datetime',
+    ];
 
     public function student()
     {
@@ -33,8 +37,9 @@ class Schedule extends Model
 
     public function vehicle()
     {
-        return $this->belongsTo(Car::class);
+        return $this->belongsTo(Car::class, 'vehicle_id');
     }
+
 
     public function invoices()
     {

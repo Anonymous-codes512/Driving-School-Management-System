@@ -12,6 +12,7 @@ class Course extends Model
     protected $fillable = [
         'course_category',
         'name',
+        'branch_id',
         'car_model_id',
         'fees',
         'duration_days',
@@ -28,6 +29,11 @@ class Course extends Model
     public function carModel()
     {
         return $this->belongsTo(CarModel::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     /**

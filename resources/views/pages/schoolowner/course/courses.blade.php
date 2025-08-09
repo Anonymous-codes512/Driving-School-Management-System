@@ -94,6 +94,7 @@
                     <tr class="text-left text-gray-600 text-sm font-semibold select-none">
                         <th class="p-4">Sr #</th>
                         <th class="p-4">Car Model</th>
+                        <th class="p-4">Branch Assigned</th>
                         <th class="p-4">Course Category</th>
                         <th class="p-4 whitespace-normal leading-snug">
                             Duration<br />(Days)
@@ -116,6 +117,9 @@
                             <td class="p-4 text-gray-600 font-semibold">{{ $index + 1 }}</td>
                             <td class="p-4 font-semibold text-gray-900 truncate" title="{{ $course->carModel->name }}">
                                 {{ $course->carModel->name }} ({{ $course->carModel->transmission }})
+                            </td>
+                            <td class="p-4 font-semibold text-gray-900 truncate" title="{{ $course->branch->name }}">
+                                {{ $course->branch->name }}
                             </td>
                             <td class="p-4 text-gray-600 truncate" title="{{ $course['course_category'] }}">
                                 {{ $course['course_category'] }}
@@ -151,6 +155,7 @@
                                         class="text-indigo-600 hover:text-indigo-800 cursor-pointer edit-button"
                                         data-id="{{ $course['id'] }}" data-car-model-id="{{ $course->car_model_id }}"
                                         data-course-category="{{ $course['course_category'] }}"
+                                        data-course-branch="{{ $course->branch->id }}"
                                         data-duration-days="{{ $course['duration_days'] }}"
                                         data-duration-minutes="{{ $course['duration_minutes'] }}"
                                         data-fees="{{ $course['fees'] }}" data-discount="{{ $course['discount'] }}"
@@ -211,7 +216,23 @@
                 <form method="POST" action="{{ route('schoolowner.courses.add_course') }}" id="addCourseForm"
                     class="space-y-6">
                     @csrf
+
+                    <div>
+                        <label for="branch" class="block text-gray-700 font-medium mb-1">
+                            Assigned Branch <span class="text-red-600">*</span></label>
+                        <select name="branch_id" id="branch"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            required>
+                            <option value="" selected>Select Branch</option>
+                            @foreach ($branches as $branch)
+                                <option value="{{ $branch->id }}">
+                                    {{ $branch->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
                         <div>
                             <label for="car_model_id_add" class="block text-gray-700 font-medium mb-1">Select Car Model
                                 <span class="text-red-600">*</span></label>
@@ -293,7 +314,7 @@
                         </div>
                     </div>
 
-                    <div class="flex justify-end gap-2 mt-4">
+                    <div class="flex justify-center gap-2 mt-4">
                         <button id="cancelAddCourseBtn" type="button"
                             class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel</button>
                         <button type="submit"
@@ -304,7 +325,7 @@
             </div>
         </div>
 
-        <!-- EDIT COURSE MODAL -->
+        <!-- Edit Course Modal -->
         <div id="editCourseModal" class="fixed inset-0 flex items-center justify-center z-50 hidden"
             style="backdrop-filter: blur(6px); background-color: rgba(0,0,0,0.35);">
             <div class="bg-gradient-to-b from-indigo-300 to-indigo-400 rounded-3xl p-6 max-w-xl w-full relative shadow-lg">
@@ -313,24 +334,42 @@
                     class="space-y-6">
                     @csrf
                     <input type="hidden" id="edit_course_id" name="course_id" />
+                    <div>
+                        <label for="edit_branch" class="block text-gray-700 font-medium mb-1">
+                            Assigned Branch <span class="text-red-600">*</span></label>
+                        <select name="branch_id" id="edit_branch"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            required>
+                            <option value="" selected>Select Branch</option>
+                            @foreach ($branches as $branch)
+                                <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
-                            <label for="car_model_id_edit" class="block text-gray-700 font-medium mb-1">Select Car Model
-                                <span class="text-red-600">*</span></label>
+                            <label for="car_model_id_edit" class="block text-gray-700 font-medium mb-1">
+                                Select Car Model <span class="text-red-600">*</span>
+                            </label>
                             <select id="car_model_id_edit" name="car_model_id" required
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300">
                                 <option value="" disabled>Select Car Model</option>
                                 @foreach ($carModels as $carModel)
-                                    <option value="{{ $carModel->id }}">{{ $carModel->name }}
-                                        ({{ $carModel->transmission }})
+                                    @php
+                                        $branchIds = $carModel->cars->pluck('branch_id')->unique()->values()->toArray();
+                                    @endphp
+                                    <option value="{{ $carModel->id }}" data-branches='@json($branchIds)'>
+                                        {{ $carModel->name }} ({{ $carModel->transmission }})
                                     </option>
                                 @endforeach
                             </select>
                         </div>
 
                         <div>
-                            <label for="course_category_edit" class="block text-gray-700 font-medium mb-1">Course Category
-                                <span class="text-red-600">*</span></label>
+                            <label for="course_category_edit" class="block text-gray-700 font-medium mb-1">
+                                Course Category <span class="text-red-600">*</span>
+                            </label>
                             <select id="course_category_edit" name="course_category" required
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300">
                                 <option value="" disabled>Select Course Category</option>
@@ -340,24 +379,26 @@
                         </div>
 
                         <div>
-                            <label for="duration_days_edit" class="block text-gray-700 font-medium mb-1">Duration (Days)
-                                <span class="text-red-600">*</span></label>
+                            <label for="duration_days_edit" class="block text-gray-700 font-medium mb-1">
+                                Duration (Days) <span class="text-red-600">*</span>
+                            </label>
                             <input type="number" id="duration_days_edit" name="duration_days" min="1" required
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300" />
                         </div>
 
                         <div>
-                            <label for="duration_minutes_edit" class="block text-gray-700 font-medium mb-1">Duration
-                                (Minutes)
-                                <span class="text-red-600">*</span></label>
+                            <label for="duration_minutes_edit" class="block text-gray-700 font-medium mb-1">
+                                Duration (Minutes) <span class="text-red-600">*</span>
+                            </label>
                             <input type="number" id="duration_minutes_edit" name="duration_minutes" min="0"
                                 required
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300" />
                         </div>
 
                         <div>
-                            <label for="fees_edit" class="block text-gray-700 font-medium mb-1">Fee
-                                <span class="text-red-600">*</span></label>
+                            <label for="fees_edit" class="block text-gray-700 font-medium mb-1">
+                                Fee <span class="text-red-600">*</span>
+                            </label>
                             <input type="number" id="fees_edit" name="fees" min="0" step="0.01" required
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300" />
                         </div>
@@ -427,6 +468,44 @@
 
         <!-- Scripts -->
         <script>
+            const allCarModels = @json($carModels);
+            document.getElementById('branch').addEventListener('change', function() {
+                const selectedBranchId = this.value;
+                const carModelSelect = document.getElementById('car_model_id_add');
+
+                // Reset
+                carModelSelect.innerHTML = '<option value="" disabled selected>Select Car Model</option>';
+
+                allCarModels.forEach(carModel => {
+                    const hasCarInBranch = carModel.cars.some(car => car.branch_id == selectedBranchId);
+
+                    if (hasCarInBranch) {
+                        const option = document.createElement('option');
+                        option.value = carModel.id;
+                        option.textContent = `${carModel.name} (${carModel.transmission})`;
+                        carModelSelect.appendChild(option);
+                    }
+                });
+            });
+
+            function filterCarModels() {
+                let selectedBranchId = document.getElementById('edit_branch').value;
+                let carModelOptions = document.querySelectorAll('#car_model_id_edit option');
+
+                carModelOptions.forEach(option => {
+                    let branches = option.dataset.branches;
+                    if (!branches) return;
+                    let branchIds = JSON.parse(branches);
+                    option.hidden = !branchIds.includes(parseInt(selectedBranchId));
+                });
+            }
+
+            document.getElementById('edit_branch').addEventListener('change', filterCarModels);
+
+            window.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('edit_branch').dispatchEvent(new Event('change'));
+            });
+
             document.addEventListener('DOMContentLoaded', function() {
                 // Modal elements
                 const addCourseModal = document.getElementById('addCourseModal');
@@ -475,6 +554,7 @@
                     button.addEventListener('click', function() {
                         const courseId = this.getAttribute('data-id');
                         const carModelId = this.getAttribute('data-car-model-id');
+                        const courseBranch = this.getAttribute('data-course-branch');
                         const courseCategory = this.getAttribute('data-course-category');
                         const durationDays = this.getAttribute('data-duration-days');
                         const durationMinutes = this.getAttribute('data-duration-minutes');
@@ -484,6 +564,7 @@
                         const status = this.getAttribute('data-status');
 
                         // Fill inputs
+                        document.getElementById('edit_branch').value = courseBranch;
                         document.getElementById('edit_course_id').value = courseId;
                         document.getElementById('car_model_id_edit').value = carModelId;
                         document.getElementById('course_category_edit').value = courseCategory;

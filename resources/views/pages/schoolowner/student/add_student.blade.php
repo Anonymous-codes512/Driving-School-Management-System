@@ -3,16 +3,15 @@
 @section('content')
     <div class="p-6 max-w-7xl ml-60 mx-auto">
         <style>
-        input[type=number]::-webkit-inner-spin-button,
-        input[type=number]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
+            input[type=number]::-webkit-inner-spin-button,
+            input[type=number]::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
 
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
-
+            input[type=number] {
+                -moz-appearance: textfield;
+            }
         </style>
         {{-- Breadcrumb --}}
         <nav class="text-gray-600 mb-8" aria-label="Breadcrumb">
@@ -57,7 +56,8 @@
                 </li>
             </ul>
 
-            <form action="{{route('schoolowner.students.add_student')}}" method="POST" id="studentForm" enctype="multipart/form-data">
+            <form action="{{ route('schoolowner.students.add_student') }}" method="POST" id="studentForm"
+                enctype="multipart/form-data">
                 @csrf
 
                 {{-- Step 1: Personal Information --}}
@@ -318,62 +318,26 @@
                             @enderror
                         </div>
                         <div>
-                            <label for="instructor" class="block text-gray-700 font-medium mb-1">
+                            <label for="instructorSelect" class="block text-gray-700 font-medium mb-1">
                                 Instructor <span class="text-red-600">*</span></label>
-                            <select name="instructor" id="instructor"
+                            <select name="instructor_id" id="instructorSelect"
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                                 required>
                                 <option value="" selected>Select Instructor</option>
                                 @foreach ($instructors as $instructor)
-                                    <option value="{{ $instructor->id }}" {{ old('car_model') }}>
+                                    <option value="{{ $instructor->id }}">
                                         {{ $instructor->employee->user->name }}
                                     </option>
                                 @endforeach
                             </select>
-                            @error('car_model')
-                                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
-                            @enderror
                         </div>
                     </div>
 
                     <div class="grid grid-cols-3 gap-6 mb-6">
                         <div>
-                            <label for="class_start_time" class="block text-gray-700 font-medium mb-1">
-                                Class Start Time <span class="text-red-600">*</span></label>
-                            <select id="class_start_time" name="class_start_time"
-                                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                required>
-                                <option value="" selected>Select Class Time</option>
-                                @for ($hour = 8; $hour <= 19; $hour++)
-                                    @php
-                                        $time1 = \Carbon\Carbon::createFromTime($hour, 0)->format('H:i');
-                                        $time2 = \Carbon\Carbon::createFromTime($hour, 30)->format('H:i');
-                                    @endphp
-                                    <option value="{{ $time1 }}">
-                                        {{ \Carbon\Carbon::createFromTime($hour, 0)->format('h:i A') }}</option>
-                                    <option value="{{ $time2 }}">
-                                        {{ \Carbon\Carbon::createFromTime($hour, 30)->format('h:i A') }}</option>
-                                @endfor
-                            </select>
-                            @error('class_start_time')
-                                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label for="class_duration" class="block text-gray-700 font-medium mb-1">
-                                Class Duration (in minutes)<span class="text-red-600">*</span></label>
-                            <input type="number" name="class_duration" id="class_duration" placeholder="Class Duration"
-                                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                required>
-                            @error('class_duration')
-                                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label for="branch" class="block text-gray-700 font-medium mb-1">
+                            <label for="branchSelect" class="block text-gray-700 font-medium mb-1">
                                 Assigned Branch <span class="text-red-600">*</span></label>
-                            <select name="branch" id="branch"
+                            <select name="branch_id" id="branchSelect"
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                                 required>
                                 <option value="" selected>Select Branch</option>
@@ -383,10 +347,38 @@
                                     </option>
                                 @endforeach
                             </select>
-                            @error('car_model')
+                        </div>
+                        {{-- <label for="slotSelect" class="...">Class Time</label>
+                        <select name="class_time" id="slotSelect" class="...">
+                            <option disabled selected>Select Time</option>
+                        </select> --}}
+                        <div>
+                            <label for="slotSelect" class="block text-gray-700 font-medium mb-1">
+                                Class Start Time <span class="text-red-600">*</span></label>
+                            <select id="slotSelect" name="class_start_time"
+                                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                required>
+                                <option value="" selected>Select Class Time</option>
+                                {{-- Dynamically populated --}}
+                            </select>
+                        </div>
+
+                        <div class="col-span-1">
+                            <label for="slot_length" class="block text-gray-700 font-medium mb-1">
+                                Slot Duration (minutes) <span class="text-red-600">*</span>
+                            </label>
+                            <select name="class_duration" id="slot_length"
+                                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                required>
+                                <option value="">Select Slot Duration</option>
+                                {{-- Dynamically populated --}}
+                            </select>
+                            @error('slot_length')
                                 <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
+
+
                     </div>
 
                     <div class="grid grid-cols-3 gap-6 mb-6">
@@ -497,6 +489,98 @@
         const carsData = @json($cars);
         const coursesData = @json($courses);
         const carModelsData = @json($carModels);
+        const branchesData = @json($branches);
+        const instructorsData = @json($instructors);
+
+        const branchSelect = document.getElementById('branchSelect');
+        const instructorSelect = document.getElementById('instructorSelect');
+        const dateInput = document.getElementById('class_start_date');
+        const slotSelect = document.getElementById('slotSelect');
+
+        let currentSlots = [];
+
+        branchSelect.addEventListener('change', updateSlots);
+        instructorSelect.addEventListener('change', updateSlots);
+        dateInput.addEventListener('change', updateSlots);
+
+        function updateSlots() {
+            const branchId = branchSelect.value;
+            const instructorId = instructorSelect.value;
+            const date = dateInput.value;
+
+            if (!branchId || !date) return;
+
+            const branch = branchesData.find(b => b.id == branchId);
+            if (!branch) return;
+
+            currentSlots = generateSlots(branch);
+            if (instructorId) {
+                currentSlots = filterSlotsByInstructor(currentSlots, instructorId, date);
+            }
+
+            populateSlotDropdown(currentSlots);
+        }
+
+        function generateSlots(branch) {
+            const opening = parseTime(branch.opening_hours);
+            const closing = parseTime(branch.closing_hours);
+            const lengths = branch.slots_length.split(',').map(s => parseInt(s.trim()));
+
+            let slots = [];
+            lengths.forEach(length => {
+                let current = new Date(opening);
+                const end = new Date(closing);
+
+                while (current.getTime() + length * 60000 <= end.getTime()) {
+                    let start = new Date(current);
+                    let endSlot = new Date(current.getTime() + length * 60000);
+                    slots.push({
+                        label: formatTime(start) + ' - ' + formatTime(endSlot),
+                        start: formatTime(start),
+                        end: formatTime(endSlot),
+                        duration: length
+                    });
+                    current = new Date(current.getTime() + length * 60000);
+                }
+            });
+            return slots;
+        }
+
+        function filterSlotsByInstructor(slots, instructorId, selectedDate) {
+            const instructor = instructorsData.find(i => i.id == instructorId);
+            if (!instructor || !instructor.schedules) return slots;
+
+            const booked = instructor.schedules.filter(s => s.class_date === selectedDate);
+
+            return slots.filter(slot => {
+                return !booked.some(b => {
+                    return (
+                        slot.start >= b.start_time && slot.start < b.end_time
+                    );
+                });
+            });
+        }
+
+        function populateSlotDropdown(slots) {
+            slotSelect.innerHTML = '<option value="">Select Time Slot</option>';
+            slots.forEach(slot => {
+                const option = document.createElement('option');
+                option.value = slot.start;
+                option.textContent = slot.label;
+                slotSelect.appendChild(option);
+            });
+        }
+
+        function parseTime(str) {
+            const [hours, minutes] = str.split(':');
+            const date = new Date();
+            date.setHours(+hours, +minutes, 0, 0);
+            return date;
+        }
+
+        function formatTime(date) {
+            return date.toTimeString().slice(0, 5); // HH:MM
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
             const carModelSelect = document.getElementById('car_model');
@@ -509,6 +593,7 @@
             const totalAmountInput = document.getElementById('total_amount');
             const advanceInput = document.getElementById('advance');
             const remainingInput = document.getElementById('remaining');
+            const branchSelect = document.getElementById('branchSelect');
 
             function filterCars() {
                 const selectedModelId = carModelSelect.value;
@@ -559,6 +644,46 @@
                     courseSelect.appendChild(option);
                 });
             }
+
+            const slotLengthSelect = document.getElementById('slot_length');
+
+            function populateSlotLengths(branchId) {
+                slotLengthSelect.innerHTML = '<option value="">Select Slot Duration</option>';
+                const branch = branchesData.find(b => b.id == branchId);
+                if (!branch || !branch.slots_length) return;
+
+                const lengths = branch.slots_length.split(',').map(s => s.trim());
+
+                lengths.forEach(length => {
+                    const option = document.createElement('option');
+                    option.value = length;
+                    option.text = `${length} minutes`;
+                    slotLengthSelect.appendChild(option);
+                });
+            }
+
+
+
+
+            branchSelect.addEventListener('change', () => {
+                populateSlotLengths(branchSelect.value);
+            });
+
+            function generateTimeOptions(opening, closing, slotMinutes) {
+                const options = [];
+                let current = new Date(`1970-01-01T${opening}`);
+                const end = new Date(`1970-01-01T${closing}`);
+
+                while (current <= end) {
+                    const hours = current.getHours().toString().padStart(2, '0');
+                    const mins = current.getMinutes().toString().padStart(2, '0');
+                    options.push(`${hours}:${mins}`);
+                    current.setMinutes(current.getMinutes() + parseInt(slotMinutes));
+                }
+
+                return options;
+            }
+
 
             carModelSelect.addEventListener('change', () => {
                 filterCars();
@@ -659,6 +784,11 @@
             if (carModelSelect.value) filterCars();
             if (carModelSelect.value && courseTypeSelect.value) filterCourses();
             updateTotalAmount();
+
+            if (branchSelect.value) {
+                populateSlotLengths(branchSelect.value);
+            }
+
 
         });
 

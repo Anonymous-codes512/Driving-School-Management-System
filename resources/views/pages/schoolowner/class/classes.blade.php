@@ -1,6 +1,6 @@
 @extends('components.schoolowner.school_owner_layout')
 @section('content')
-    <div class="p-6 max-w-7xl ml-60">
+    <div class="p-6 max-w-7xl ml-60 overflow-x-auto">
         <!-- Breadcrumb -->
         <nav class="text-gray-500 text-sm mb-4 flex gap-2 select-none">
             <a href="{{ route('schoolowner.dashboard') }}" class="hover:text-indigo-500">Dashboards</a>
@@ -67,7 +67,7 @@
         </div>
 
         <!-- Weekly Schedule Grid -->
-        <div class="bg-white rounded-lg shadow-sm border mb-8 overflow-hidden" id="weekly-view">
+        <div class="bg-white rounded-lg shadow-sm border mb-8 overflow-auto" id="weekly-view">
             <div class="grid grid-cols-8 gap-0">
                 <!-- Empty top-left corner -->
                 <div class="bg-gray-50 p-4 border-b border-r border-gray-200"></div>
@@ -85,7 +85,7 @@
         </div>
 
         <!-- Daily Schedule View -->
-        <div class="bg-white rounded-lg shadow-sm border mb-8 overflow-hidden hidden" id="daily-view">
+        <div class="bg-white rounded-lg shadow-sm border mb-8 overflow-auto hidden" id="daily-view">
             <div class="p-6">
                 <h4 class="text-lg font-semibold text-gray-800 mb-4" id="daily-date-title">Monday, December 16, 2024</h4>
                 <div class="space-y-3" id="daily-schedule-list">
@@ -95,7 +95,7 @@
         </div>
 
         <!-- Monthly Schedule View -->
-        <div class="bg-white rounded-lg shadow-sm border mb-8 overflow-hidden hidden" id="monthly-view">
+        <div class="bg-white rounded-lg shadow-sm border mb-8 overflow-auto hidden" id="monthly-view">
             <div class="p-6">
                 <div class="grid grid-cols-7 gap-1 mb-4">
                     <div class="text-center font-medium text-gray-600 p-2">Sun</div>
@@ -112,13 +112,39 @@
             </div>
         </div>
 
+
+        @php
+            // Pick first slot length if multiple provided
+            $slotLengths = explode(',', $slotLength);
+            $slotMin = (int) trim($slotLengths[0]);
+
+            // Parse opening and closing hours as DateTime
+            $start = \Carbon\Carbon::createFromFormat('H:i', $opening);
+            $end = \Carbon\Carbon::createFromFormat('H:i', $closing);
+
+            $timeSlots = [];
+            $current = $start->copy();
+            while ($current->lte($end)) {
+                $timeSlots[] = $current->format('g:i a');
+                $current->addMinutes($slotMin);
+            }
+
+            // Group schedules by car reg and start_time string for quick lookup
+            $scheduleMap = [];
+            foreach ($scheduleData as $schedule) {
+                $reg = $schedule['car_registration'];
+                $time = \Carbon\Carbon::parse($schedule['start_time'])->format('g:i a');
+                $scheduleMap[$reg][$time][] = $schedule;
+            }
+        @endphp
+
         <!-- Car Schedule Section -->
         <div class="mb-6">
             <h2 class="text-gray-700 font-semibold mb-4">Car Schedule</h2>
         </div>
 
         <!-- Car Schedule Table -->
-        <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
+        <div class="bg-white rounded-lg shadow-sm border overflow-auto">
             <div class="scrollbar-hidden overflow-x-auto">
                 <div class="inline-flex min-w-full">
                     <!-- Cars column (fixed) -->
@@ -126,24 +152,16 @@
                         <div class="p-4 border-b border-gray-200 font-bold text-black text-center min-w-[120px]">
                             Cars
                         </div>
-                        @php
-                            $cars = ['KFG-231', 'KFG-232', 'KFG-233'];
-                        @endphp
-                        @foreach ($cars as $car)
+                        @foreach ($branch->cars as $car)
                             <div
                                 class="p-4 border-b border-gray-200 text-center font-medium text-gray-800 min-h-[80px] flex items-center justify-center bg-white text-black">
-                                {{ $car }}
+                                {{ $car->registration_number }}
                             </div>
                         @endforeach
                     </div>
 
                     <!-- Time slots -->
-                    @php
-                        $timeSlots = ['8:00 am', '9:00 am', '10:00 am', '11:00 am', '12:00 pm', '1:00 pm'];
-                        $sectors = ['G-11/2', 'I-8', 'F-11', 'G-11/2', 'I-10/2', 'G-9'];
-                    @endphp
-
-                    @foreach ($timeSlots as $timeIndex => $timeSlot)
+                    @foreach ($timeSlots as $timeSlot)
                         <div class="border-r border-gray-200">
                             <!-- Time header -->
                             <div
@@ -152,41 +170,35 @@
                             </div>
 
                             <!-- Car schedule slots -->
-                            @foreach ($cars as $carIndex => $car)
+                            @foreach ($branch->cars as $car)
                                 <div class="p-2 border-b border-gray-200 min-h-[80px] flex flex-col justify-center gap-1">
                                     @php
-                                        $isBooked = rand(0, 3) > 0; // Random booking for demo
-                                        $sector = $sectors[array_rand($sectors)];
-                                        $hasDoubleBooking = rand(0, 4) == 0; // 20% chance of double booking
+                                        $bookings = $scheduleMap[$car->registration_number][$timeSlot] ?? [];
                                     @endphp
 
-                                    @if ($isBooked)
-                                        <span
-                                            class="inline-block px-2 py-1 rounded text-xs font-medium cursor-pointer
-                                            @if (str_contains($sector, 'G-11')) bg-pink-100 text-pink-600
-                                            @elseif (str_contains($sector, 'I-')) bg-red-100 text-red-600
-                                            @elseif (str_contains($sector, 'F-')) bg-orange-100 text-orange-600
-                                            @else bg-purple-100 text-purple-600 @endif"
-                                            onclick="showBookingDetails('{{ $car }}', '{{ $sector }}', '{{ $timeSlot }}')">
-                                            {{ $sector }}
-                                        </span>
-
-                                        @if ($hasDoubleBooking)
-                                            @php $sector2 = $sectors[array_rand($sectors)]; @endphp
+                                    @if (count($bookings) > 0)
+                                        @foreach ($bookings as $booking)
+                                            @php
+                                                $sector = $booking['sector'] ?? 'Unknown Sector';
+                                                $colorClass = 'bg-purple-100 text-purple-600';
+                                                if (str_contains($sector, 'G-11')) {
+                                                    $colorClass = 'bg-pink-100 text-pink-600';
+                                                } elseif (str_contains($sector, 'I-')) {
+                                                    $colorClass = 'bg-red-100 text-red-600';
+                                                } elseif (str_contains($sector, 'F-')) {
+                                                    $colorClass = 'bg-orange-100 text-orange-600';
+                                                }
+                                            @endphp
                                             <span
-                                                class="inline-block px-2 py-1 rounded text-xs font-medium cursor-pointer
-                                                @if (str_contains($sector2, 'G-11')) bg-pink-100 text-pink-600
-                                                @elseif (str_contains($sector2, 'I-')) bg-red-100 text-red-600
-                                                @elseif (str_contains($sector2, 'F-')) bg-orange-100 text-orange-600
-                                                @else bg-purple-100 text-purple-600 @endif"
-                                                onclick="showBookingDetails('{{ $car }}', '{{ $sector2 }}', '{{ $timeSlot }}')">
-                                                {{ $sector2 }}
+                                                class="inline-block px-2 py-1 rounded text-xs font-medium cursor-pointer {{ $colorClass }}"
+                                                onclick="showBookingDetails('{{ $car->registration_number }}', '{{ $sector }}', '{{ $timeSlot }}')">
+                                                {{ $sector }}
                                             </span>
-                                        @endif
+                                        @endforeach
                                     @else
                                         <span
                                             class="inline-block px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-600 cursor-pointer"
-                                            onclick="bookSlot('{{ $car }}', '{{ $timeSlot }}')">
+                                            onclick="bookSlot('{{ $car->registration_number }}', '{{ $timeSlot }}')">
                                             Available
                                         </span>
                                     @endif
@@ -197,6 +209,8 @@
                 </div>
             </div>
         </div>
+
+
         <!-- Gradient Modal with Confirm Support -->
         <div id="customModal" class="fixed inset-0 z-50 hidden flex items-center justify-center"
             style="backdrop-filter: blur(6px); background-color: rgba(0,0,0,0.35);">
@@ -211,11 +225,9 @@
                 </div>
             </div>
         </div>
-
     </div>
-
+    
     <script>
-        // Global state
         let currentView = 'weekly';
         let currentDate = new Date();
         let currentWeek = 3;
@@ -510,8 +522,8 @@
             ${
                 hasSchedule
                     ? `<div class="text-xs mt-2 px-4 py-2 bg-gray-300 text-black hover:bg-black hover:text-white transition-colors rounded px-1 w-fit mx-auto cursor-pointer">
-                                                                    2 Classes
-                                                               </div>`
+                                                                                            2 Classes
+                                                                                       </div>`
                     : ''
             }
         `;

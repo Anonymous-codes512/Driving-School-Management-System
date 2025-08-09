@@ -216,6 +216,7 @@
                 ['name' => 'Leaves', 'route' => 'schoolowner.leaves', 'icon' => 'bi-exclamation-square'],
                 ['name' => 'Coupons', 'route' => 'schoolowner.coupons', 'icon' => 'bi-ticket-perforated'],
                 ['name' => 'Inquiries', 'route' => 'schoolowner.inquiries', 'icon' => 'bi-envelope'],
+                ['name' => 'Settings', 'route' => 'schoolowner.settings', 'icon' => 'bi-gear'],
             ];
         @endphp
 
@@ -332,6 +333,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!-- Toastr JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
     <script>
         toastr.options = {
             "closeButton": true,

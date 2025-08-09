@@ -116,6 +116,7 @@
                     <tr class="text-left text-gray-600 text-sm font-semibold select-none">
                         <th class="p-3">Sr #</th>
                         <th class="p-3">Car Model</th>
+                        <th class="p-3">Branch Assigned</th>
                         <th class="p-3">Registration Number</th>
                         <th class="p-3 text-center">Actions</th>
                     </tr>
@@ -132,6 +133,10 @@
                                 {{ $car->carModel->name }} ({{ ucfirst($car->carModel->transmission) }})
                             </td>
 
+                            <td class="p-3 text-gray-600 truncate max-w-[100px]" title="{{ $car->branch->name }} ">
+                                {{ $car->branch->name }} 
+                            </td>
+
                             <td class="p-3 text-gray-600 truncate max-w-[300px]" title="{{ $car['registration_number'] }}">
                                 {{ $car['registration_number'] }}
                             </td>
@@ -142,7 +147,7 @@
                                     <!-- Edit Car Button -->
                                     <a id="editCarButton"
                                         class="text-indigo-600 hover:text-indigo-800 cursor-pointer edit-car-button"
-                                        data-id="{{ $car->id }}" data-car-model-id="{{ $car->carModel->id }}"
+                                        data-id="{{ $car->id }}" data-car-branch="{{ $car->branch_id }}" data-car-model-id="{{ $car->carModel->id }}"
                                         data-registration-number="{{ $car->registration_number }}" title="Edit">
                                         <i class="bi bi-pencil-square text-lg"></i>
                                     </a>
@@ -228,6 +233,7 @@
             // Inputs inside modals for edit/delete car
             const editCarIdInput = document.getElementById('editCarId');
             const editCarModelSelect = document.getElementById('editCarModelId');
+            const editCarBranchSelect = document.getElementById('editBranch');
             const editCarRegistrationInput = document.getElementById('editRegistrationNumber');
             const deleteCarIdInput = document.getElementById('deleteCarId');
             const deleteCarForm = document.getElementById('deleteCarForm');
@@ -288,10 +294,12 @@
                 button.addEventListener('click', function() {
                     const id = this.getAttribute('data-id');
                     const carModelId = this.getAttribute('data-car-model-id');
+                    const carBranch = this.getAttribute('data-car-branch');
                     const registrationNumber = this.getAttribute('data-registration-number');
 
                     editCarIdInput.value = id;
                     editCarModelSelect.value = carModelId;
+                    editCarBranchSelect.value = carBranch;
                     editCarRegistrationInput.value = registrationNumber;
 
                     openModal(editCarModal);

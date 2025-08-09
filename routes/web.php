@@ -13,6 +13,8 @@ use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboardCo
 use App\Http\Controllers\SchoolOwner\InstructorController;
 use App\Http\Controllers\SchoolOwner\InvoiceController;
 use App\Http\Controllers\SchoolOwner\LeaveController;
+use App\Http\Controllers\SchoolOwner\ScheduleController;
+use App\Http\Controllers\SchoolOwner\SettingController;
 use App\Http\Controllers\SchoolOwner\StudentController;
 use App\Http\Controllers\SuperAdmin\SchoolController;
 use App\Http\Controllers\SuperAdmin\SubscriptionController;
@@ -123,9 +125,7 @@ Route::middleware(['custom.auth:schoolowner'])->group(function () {
         return view('pages.schoolowner.attendance');
     })->name('schoolowner.attendance');
 
-    Route::get('/schoolowner/classes', function () {
-        return view('pages.schoolowner.class.classes');
-    })->name('schoolowner.classes');
+    Route::get('/schoolowner/classes', [ScheduleController::class, 'schedules'])->name('schoolowner.classes');
 
     Route::get('/schoolowner/leaves', [LeaveController::class, 'leaves'])->name('schoolowner.leaves');
 
@@ -137,6 +137,10 @@ Route::middleware(['custom.auth:schoolowner'])->group(function () {
     Route::get('/schoolowner/inquiries', function () {
         return view('pages.schoolowner.inquiries');
     })->name('schoolowner.inquiries');
+
+    Route::get('/schoolowner/settings',[SettingController::class, 'settings'])->name('schoolowner.settings');
+    Route::post('/schoolowner/settings/account/update', [SettingController::class, 'updateAccount'])->name('schoolowner.settings.account.update');
+
 });
 
 

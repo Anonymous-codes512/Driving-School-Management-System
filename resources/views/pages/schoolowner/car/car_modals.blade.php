@@ -42,7 +42,8 @@
             <div class="flex justify-end gap-2">
                 <button id="cancelAddModelBtn"
                     class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel</button>
-                <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Add Car
+                <button type="submit"
+                    class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Add Car
                     Model</button>
             </div>
         </form>
@@ -92,7 +93,8 @@
             <div class="flex justify-end gap-2">
                 <button id="cancelEditModelBtn"
                     class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel</button>
-                <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Update Car
+                <button type="submit"
+                    class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Update Car
                     Model</button>
             </div>
         </form>
@@ -108,7 +110,8 @@
         <p class="mb-4 text-gray-700">Are you sure you want to delete this car model?</p>
 
         <div class="flex justify-center gap-4">
-            <button id="cancelDeleteModelBtn" class="bg-black text-white px-6 py-2 rounded-lg cursor-pointer">Cancel</button>
+            <button id="cancelDeleteModelBtn"
+                class="bg-black text-white px-6 py-2 rounded-lg cursor-pointer">Cancel</button>
 
             <form id="deleteModelForm" method="POST" action="">
                 @csrf
@@ -130,6 +133,20 @@
 
         <form action="{{ route('schoolowner.cars.add_car') }}" method="POST" class="space-y-6">
             @csrf
+            <div>
+                <label for="branch" class="block text-gray-700 font-medium mb-1">
+                    Assigned Branch <span class="text-red-600">*</span></label>
+                <select name="branch_id" id="branch"
+                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    required>
+                    <option value="" selected>Select Branch</option>
+                    @foreach ($branches as $branch)
+                        <option value="{{ $branch->id }}">
+                            {{ $branch->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
             <div>
                 <label for="car_model_id" class="block text-gray-700 font-medium mb-1">Select Car Model <span
                         class="text-red-600">*</span></label>
@@ -155,9 +172,11 @@
             </div>
 
             <div class="flex justify-end gap-2">
-                <button id="cancelAddCarBtn" class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel
+                <button id="cancelAddCarBtn"
+                    class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel
                 </button>
-                <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Add
+                <button type="submit"
+                    class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Add
                     Car</button>
             </div>
         </form>
@@ -175,13 +194,30 @@
             <input type="hidden" id="editCarId" name="car_id" value="">
 
             <div>
+                <label for="editBranch" class="block text-gray-700 font-medium mb-1">
+                    Assigned Branch <span class="text-red-600">*</span></label>
+                <select name="branch_id" id="editBranch"
+                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    required>
+                    <option value="" selected>Select Branch</option>
+                    @foreach ($branches as $branch)
+                        <option value="{{ $branch->id }}">
+                            {{ $branch->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
                 <label for="editCarModelId" class="block text-gray-700 font-medium mb-1">Select Car Model <span
                         class="text-red-600">*</span></label>
                 <select id="editCarModelId" name="car_model_id" required
                     class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-300">
                     <option value="" disabled>Select Car Model</option>
                     @foreach ($carModels as $model)
-                        <option value="{{ $model->id }}">{{ $model->name }} ({{ ucfirst($model->transmission) }})</option>
+                        <option value="{{ $model->id }}">{{ $model->name }}
+                            ({{ ucfirst($model->transmission) }})
+                        </option>
                     @endforeach
                 </select>
             </div>
@@ -195,9 +231,11 @@
             </div>
 
             <div class="flex justify-end gap-2">
-                <button id="cancelEditCarBtn" class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel
+                <button id="cancelEditCarBtn"
+                    class="bg-black text-white font-semibold px-6 py-2 rounded-md cursor-pointer">Cancel
                 </button>
-                <button type="submit" class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Update
+                <button type="submit"
+                    class="border border-black px-6 py-2 rounded-md hover:bg-indigo-200 cursor-pointer">Update
                     Car</button>
             </div>
         </form>
@@ -213,12 +251,14 @@
         <p class="mb-4 text-gray-700">Are you sure you want to delete this car?</p>
 
         <div class="flex justify-center gap-4">
-            <button id="cancelDeleteCarBtn" class="bg-black text-white px-6 py-2 rounded-lg cursor-pointer">Cancel</button>
+            <button id="cancelDeleteCarBtn"
+                class="bg-black text-white px-6 py-2 rounded-lg cursor-pointer">Cancel</button>
 
             <form id="deleteCarForm" method="POST" action="">
                 @csrf
                 <input type="hidden" name="car_id" id="deleteCarId" value="">
-                <button type="submit" class="border border-black px-6 py-2 rounded-lg hover:bg-indigo-200 cursor-pointer">Delete
+                <button type="submit"
+                    class="border border-black px-6 py-2 rounded-lg hover:bg-indigo-200 cursor-pointer">Delete
                 </button>
             </form>
         </div>

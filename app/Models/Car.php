@@ -10,6 +10,7 @@ class Car extends Model
     use HasFactory;
 
     protected $fillable = [
+        'branch_id',
         'car_model_id',
         'registration_number',
         'status',
@@ -22,6 +23,11 @@ class Car extends Model
     public function carModel()
     {
         return $this->belongsTo(CarModel::class, 'car_model_id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 
 

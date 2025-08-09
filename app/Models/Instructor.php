@@ -22,15 +22,15 @@ class Instructor extends Model
         return $this->belongsTo(Employee::class);
     }
 
-    // public function students()
-    // {
-    //     return $this->hasMany(Student::class);
-    // }
+    public function students()
+    {
+        return $this->hasMany(Student::class);
+    }
 
-    // public function schedules()
-    // {
-    //     return $this->hasMany(Schedule::class);
-    // }
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class);
+    }
 
     // public function attendances()
     // {

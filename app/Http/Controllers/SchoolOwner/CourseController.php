@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\SchoolOwner;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\CarModel;
 use App\Models\Course;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class CourseController extends Controller
@@ -16,6 +18,9 @@ class CourseController extends Controller
         $sort = $request->get('sort', 'name_asc'); // Default sort ascending by name
 
         $query = Course::query()->with('carModel');
+        $user = Auth::user();
+        $schoolIds = $user->schoolOwner->schools->pluck('id')->toArray();
+        $branches = Branch::where('owner_id', $user->schoolOwner->id)->whereIn('school_id', $schoolIds)->get();
 
         if ($search) {
             $searchLower = Str::lower($search);
@@ -38,13 +43,14 @@ class CourseController extends Controller
         $perPage = 15;
         $page = $request->get('page', 1);
 
-        $carModels = CarModel::all();
+        $carModels = CarModel::with(['cars:id,car_model_id,branch_id'])->get();
 
         $courses = $query->paginate($perPage, ['*'], 'page', $page);
 
         return view('pages.schoolowner.course.courses', [
             'courses' => $courses,
-            'carModels' => $carModels
+            'carModels' => $carModels,
+            'branches' => $branches,
         ]);
     }
 
@@ -52,6 +58,7 @@ class CourseController extends Controller
     {
         $rules = [
             'car_model_id'     => 'required|exists:car_models,id',
+            'branch_id'     => 'required|exists:branches,id',
             'course_category'  => 'required|string|max:255',
             'duration_days'    => 'required|integer|min:1',
             'duration_minutes' => 'required|integer|min:0',
@@ -76,6 +83,7 @@ class CourseController extends Controller
 
             Course::create([
                 'car_model_id'     => $validated['car_model_id'],
+                'branch_id'     => $validated['branch_id'],
                 'course_category'  => $validated['course_category'],
                 'duration_days'    => $validated['duration_days'],
                 'duration_minutes' => $validated['duration_minutes'],
@@ -106,6 +114,7 @@ class CourseController extends Controller
 
         $rules = [
             'car_model_id'     => 'required|exists:car_models,id',
+            'branch_id'     => 'required|exists:branches,id',
             'course_category'  => 'required|string|max:255',
             'duration_days'    => 'required|integer|min:1',
             'duration_minutes' => 'required|integer|min:0',
@@ -132,6 +141,7 @@ class CourseController extends Controller
 
             $course->update([
                 'car_model_id'     => $validated['car_model_id'],
+                'branch_id'     => $validated['branch_id'],
                 'course_category'  => $validated['course_category'],
                 'duration_days'    => $validated['duration_days'],
                 'duration_minutes' => $validated['duration_minutes'],
